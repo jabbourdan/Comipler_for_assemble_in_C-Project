@@ -5,7 +5,7 @@
 #include <ctype.h>
 #include "globals.h"
 
-struct dataTable {
+struct dataTable  {
     char symbol [MAX_LINE_LENGTH];
     int value;
     int baseaddress;

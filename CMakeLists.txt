@@ -3,4 +3,4 @@ project(letstry C)
 
 set(CMAKE_C_STANDARD 90)
 
-add_executable(letstry main.c makeAm.c mcroValid.c dataTable.c machineCode.c validSyntax.c firstStep1.c)
+add_executable(letstry main.c makeAm.c mcroValid.c validSyntax.c firstStep.c)

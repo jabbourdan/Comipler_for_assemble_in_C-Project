@@ -5,7 +5,7 @@
 #include "globals.h"
 
 struct machineCode {
-    char symbol[MAX_LINE_LENGTH];
+    char symbol[31];
     char opcode [21];
     char funct [5];
     char sregister [5];

@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "globals.h"
 
-#define MAX_LINE_LENGTH 100
 
 struct Macro {
     char name[MAX_LINE_LENGTH];

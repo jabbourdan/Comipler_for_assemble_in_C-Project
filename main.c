@@ -24,13 +24,13 @@ int main(int argc, char *argv[]) {
         struct  dataTable* dataTail= NULL;
         struct  dataTable* dataHead = NULL;
         struct  machineCode* machineTail= NULL;
-        struct  machineCode* MachineHead = NULL;
+        struct  machineCode* machineHead = NULL;
         dataHead = (struct dataTable*)malloc(sizeof(struct dataTable));
         dataTail = (struct dataTable*)malloc(sizeof(struct dataTable));
         dataTail = dataHead;
-        MachineHead = (struct machineCode*)malloc(sizeof(struct machineCode));
+        machineHead = (struct machineCode*)malloc(sizeof(struct machineCode));
         machineTail = (struct machineCode*)malloc(sizeof(struct machineCode));
-        machineTail = MachineHead;
+        machineTail = machineHead;
         char *file = (char *)malloc((filenameLength + extensionLength + 1) * sizeof(char));
         fileEnd = file;
         strcpy(file, argv[i]);
@@ -55,9 +55,9 @@ int main(int argc, char *argv[]) {
 
             }
             printf("%s ----\n ",fileEnd);
-            firstcheck(fileEnd,dataHead,MachineHead,&IC,&DC);
-        }
 
+        }
+        firstcheck(fileEnd,dataHead,machineHead,&IC,&DC);
 
 
         free(file);

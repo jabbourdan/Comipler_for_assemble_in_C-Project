@@ -1,6 +1,24 @@
+
+#include <stdio.h>
 #include "firstStep1.h"
 
-int dataArg(char line[] , int index, struct  machineCode* dhead){
+int NotExistSymbol(struct  Stable* tail , char sname[]) /*Checks if the symbol already exists*/
+{
+    struct  Stable* tailf = NULL;
+    tailf = (struct Stable*)malloc(sizeof(struct Stable));
+    tailf = tail;
+    while (tailf != NULL)  /*Run on all the symbols we have already found*/
+    {
+        if (!strcmp(tailf->symbol , sname))
+        {
+            return 0;
+        }
+        tailf = tailf->next;
+    }
+    return 1;
+}
+int DcData(char line[] , int index, struct  Decode* dhead) /*Summarize the number of values in the data prompt*/
+{
     int dccounter = 1;
     while (line[index] != '\0')
     {
@@ -10,13 +28,30 @@ int dataArg(char line[] , int index, struct  machineCode* dhead){
     }
     return dccounter ;
 }
-int stringOrData(char line[] , int index, struct  machineCode* dhead) /*Checks whether this is a data prompt or a string prompt, if so returns the space to be allocated for them*/
+int DcString(char line[] , int index, struct  Decode* dhead) /*Summarize the number of chars in the string prompt*/
+{
+    int dccounter = 0;
+    while(isspace(line[index]))
+        index ++;
+    if (line[index] == 34)
+    {
+        index = index + 1;
+        while (line[index] != 34 && line[index] != '\n' )
+        {
+            index++;
+            dccounter++;
+        }
+    }
+    return dccounter + 1;
+
+}
+int DataOrString(char line[] , int index, struct  Decode* dhead) /*Checks whether this is a data prompt or a string prompt, if so returns the space to be allocated for them*/
 {
     int aindex = 0;
-    char att[MAX_LINE_LENGTH];
+    char att[MAX];
     if(line[index] == '\n')
         return 0;
-    memset(att, '\0' , MAX_LINE_LENGTH);
+    memset(att, '\0' , MAX);
     while(isspace(line[index]))
         index ++;
     while (!isspace(line[index]) && line[index] != '\n')
@@ -26,32 +61,17 @@ int stringOrData(char line[] , int index, struct  machineCode* dhead) /*Checks w
         index++;
     }
     if(!strcmp(".data",att))
-        return(dataArg(line , index, dhead));
+        return(DcData(line , index, dhead));
     if (!strcmp(".string",att))
-        return(stringArg(line , index, dhead));
+        return(DcString(line , index, dhead));
     return 0;
 
 }
-int existSymbol(struct  dataTable* tail , char sname[]) /*Checks if the symbol already exists*/
+int IsSymbol(char line[] , struct  Stable* temp,struct  Stable* tail, struct  Decode* dhead) /*Checks whether a new symbol is being declared*/
 {
-    struct  dataTable* tailf = NULL;
-    tailf = (struct dataTable*)malloc(sizeof(struct dataTable));
-    tailf = tail;
-    while (tailf != NULL)  /*Run on all the symbols we have already found*/
-    {
-        if (strcmp(tailf->symbol , sname)==0)
-        {
-            return 1;
-        }
-        tailf = tailf->next;
-    }
-    //printf("\n ----------------------The line with the name is : %s \n",sname);
-    return 0;
-}
-int isSymbol(char line[], struct  dataTable *temp,struct  dataTable *tail, struct  machineCode* dhead){
     int index = 0 , sindex = 0;
-    char sname[MAX_LINE_LENGTH];
-    memset(sname, '\0' , MAX_LINE_LENGTH);
+    char sname[MAX];
+    memset(sname, '\0' , MAX);
     if(line[index] == '\n')
         return 0;
     while(isspace(line[index]))
@@ -64,11 +84,11 @@ int isSymbol(char line[], struct  dataTable *temp,struct  dataTable *tail, struc
     }
     if(line[index] == ':')
     {
-        if (!existSymbol(tail , sname))
+        if (NotExistSymbol(tail , sname))
         {
             strcpy(temp->symbol,sname);
             strcpy(temp->attributes,"0000");
-            temp->attributes[0] = temp->attributes[0]+ stringOrData(line,index+1,dhead);
+            temp->attributes[0] = temp->attributes[0] + DataOrString(line,index+1,dhead);
             return 1;
         }
         else
@@ -77,54 +97,52 @@ int isSymbol(char line[], struct  dataTable *temp,struct  dataTable *tail, struc
         }
     }
     return 0;
+
 }
 
-
-int stringArg(char line[] , int index, struct  machineCode* dhead) /*Summarize the number of chars in the string prompt*/
+int firstCheck(int IJ, char *argv[], struct  Stable* shead, struct  Decode* dhead, int *IC, int *DC)
 {
-    int count = 0;
-    while(isspace(line[index]))
-        index ++;
-    if (line[index] == 34)
+    int value, index = 0, errorflag = 0;
+    int tempDC = 0 , tempIC = 100 ;
+    char line[MAX];
+    char fname[MAX];
+    FILE *fpr;
+    struct  Stable* tail= NULL;
+    struct  Decode* endd= NULL;
+    tail = (struct Stable*)malloc(sizeof(struct Stable));
+    tail = shead;
+    memset(line, '\0' , MAX);
+    strcpy(fname,argv[IJ]);
+    strncat(fname, ".am", 3);
+    fpr = fopen(fname,"r");
+    while (fgets(line, MAX, fpr))
     {
-        index = index + 1;
-        while (line[index] != 34 && line[index] != '\n' )
+        struct  Decode* dtemp= NULL;
+        struct  Stable* temp = NULL;
+        dtemp = (struct Decode*)malloc(sizeof(struct Decode));
+        temp = (struct Stable*)malloc(sizeof(struct Stable));
+        strcpy(dtemp->symbol,"null");
+        if(IsSymbol(line,temp,tail,dtemp))
         {
-            index++;
-            count++;
-        }
-    }
-    return count + 1;
-
-}
-
-
-int firstcheck(char* fileName, struct  dataTable* shead, struct  machineCode* dhead, int *IC, int *DC){
-    char line[MAX_LINE_LENGTH];
-    FILE *file = open_file(fileName,"r");
-    memset(line, '\0' , MAX_LINE_LENGTH);
-    struct  dataTable* temp = NULL;
-    struct  machineCode* datatemp= NULL;
-    struct  dataTable* tail= NULL;
-    while (fgets(line, MAX_LINE_LENGTH, file))
-    {
-        int tempIC = 100 ,tempDC = 0,index=0;
-        datatemp = (struct machineCode*)malloc(sizeof(struct machineCode));
-        temp = (struct dataTable*)malloc(sizeof(struct dataTable));
-        strcpy(datatemp->symbol,"null");
-        int x = isSymbol(line,temp,tail,datatemp);
-        printf("%d ---",x);
-        if(x)
-        {
-            dhead->next = datatemp;
+            dhead->next = dtemp;
             dhead =  dhead->next;
-            strcpy(datatemp -> symbol, temp->symbol);
+            strcpy(dtemp -> symbol, temp->symbol);
             temp ->value = tempIC;
             temp ->baseaddress = tempIC - tempIC %16;
             temp ->offset = tempIC % 16;
             shead ->next = temp;
             shead =  shead->next;
+            while(isspace(line[index]))
+                index++;
+            while(!isspace(line[index]))
+                index++;
 
         }
     }
+    fclose(fpr);
+    endd = (struct Decode*)malloc(sizeof(struct Decode));
+    dhead->next = endd;
+    *IC = tempIC;
+    *DC = tempDC;
+    return errorflag;
 }

@@ -12,8 +12,8 @@
 #include "validSyntax.h"
 
 
-int isSymbol(char line[], struct  dataTable* temp,struct  dataTable* tail, struct  machineCode* dhead);
-int notExistSymbol(struct  dataTable* tail , char sname[]);
+int isSymbol(char line[], struct  dataTable* temp,struct  dataTable* tail,struct  dataTable* dataTable, struct  machineCode* dhead);
+int notExistSymbol(struct  dataTable* tail ,struct  dataTable* dataTable , char sname[]);
 int firstcheck(char* fileName, struct  dataTable* shead, struct  machineCode* dhead, int *IC, int *DC);
 int stringOrData(char line[] , int index, struct  machineCode* dhead);
 int stringArg(char line[] , int index, struct  machineCode* dhead);

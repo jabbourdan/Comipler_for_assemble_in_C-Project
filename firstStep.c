@@ -1,7 +1,7 @@
 #include "firstStep.h"
 
 
-int isSymbol(char line[], struct  dataTable* temp,struct  dataTable* tail, struct  machineCode* dhead){
+int isSymbol(char line[], struct  dataTable* temp,struct  dataTable* tail,struct  dataTable* dataTable ,struct  machineCode* dhead){
     int index = 0 , sindex = 0;
     char sname[MAX_LINE_LENGTH];
     memset(sname, '\0' , MAX_LINE_LENGTH);
@@ -19,26 +19,26 @@ int isSymbol(char line[], struct  dataTable* temp,struct  dataTable* tail, struc
     {
         if (validSymbol(line,sname,index))
         {
-            if(notExistSymbol(tail,sname)){
+            if(notExistSymbol(tail,dataTable,sname)){
                 strcpy(temp->symbol,sname);
                 strcpy(temp->attributes,"0000");
                 temp->attributes[0] = temp->attributes[0]+ stringOrData(line,index+1,dhead);
                 return 1;
             }else
             {
-                printf("error: %s already exist \n" , sname );
+                printf("\nerror: The symbol %s already exist in the file\n" , sname );
             }
         }
 
     }
     return 0;
 }
-
-int notExistSymbol(struct  dataTable* tail , char sname[]) /*Checks if the symbol already exists*/
+int notExistSymbol(struct  dataTable* tail ,struct  dataTable* dataTable , char sname[]) /*Checks if the symbol already exists*/
 {
-    struct  dataTable* tailf = NULL;
+    struct dataTable* tailf = NULL;
     tailf = (struct dataTable*)malloc(sizeof(struct dataTable));
     tailf = tail;
+    tailf->next = NULL;
     while (tailf != NULL)  /*Run on all the symbols we have already found*/
     {
         if (!strcmp(tailf->symbol , sname))
@@ -47,6 +47,9 @@ int notExistSymbol(struct  dataTable* tail , char sname[]) /*Checks if the symbo
         }
         tailf = tailf->next;
     }
+    //strcpy(tail->symbol,sname);
+    //tail->next=NULL;
+
     return 1;
 }
 int stringArg(char line[] , int index, struct  machineCode* dhead) /*Summarize the number of chars in the string prompt*/
@@ -100,25 +103,58 @@ int stringOrData(char line[] , int index, struct  machineCode* dataHead) /*Check
 
 }
 
-int firstcheck(char* fileName, struct  dataTable* shead, struct  machineCode* dhead, int *IC, int *DC){
-    int tempDC = 0 , tempIC = 100 ;
+
+int firstcheck(char* fileName, struct  dataTable* dataHead, struct  machineCode* machineHead, int *IC, int *DC){
+    int tempDC = 0 , tempIC = 100,ind ;
     char line[MAX_LINE_LENGTH];
     FILE *file = open_file(fileName,"r");
     struct  dataTable* tail= NULL;
+    struct  machineCode* endd= NULL;
     tail = (struct dataTable*)malloc(sizeof(struct dataTable));
-    tail = shead;
+    tail = dataHead;
     memset(line, '\0' , MAX_LINE_LENGTH);
     while (fgets(line, MAX_LINE_LENGTH, file))
     {
-        struct  machineCode* dtemp= NULL;
+        struct  machineCode* machineTemp= NULL;
         struct  dataTable* temp = NULL;
-        dtemp = (struct machineCode*)malloc(sizeof(struct machineCode));
+        machineTemp = (struct machineCode*)malloc(sizeof(struct machineCode));
         temp = (struct dataTable*)malloc(sizeof(struct dataTable));
-        strcpy(dtemp->symbol,"null");
-        if(isSymbol(line,temp,tail,dtemp)){
-            printf(temp->symbol);
+        strcpy(machineTemp->symbol,"null");
+        //strcpy(dataHead->symbol,"null");
+        if(isSymbol(line,temp,tail,dataHead, machineTemp))
+        {
+            machineHead->next = machineHead;
+            machineHead =  machineHead->next;
+            strcpy(machineTemp -> symbol, temp->symbol);
+
+            temp ->value = tempIC;
+            temp ->baseaddress = tempIC - tempIC %16;
+            temp ->offset = tempIC % 16;
+            temp->next = NULL;
+            //dataHead = temp;
+            //dataHead =  dataHead->next;
+            while(tail->next !=NULL){
+                tail->next;
+            }
+            tail->next = temp;
+            tail = tail->next;
+            //dataHead = tail;
+            //while(isspace(line[ind]))
+            //    ind++;
+            //while(!isspace(line[ind]))
+            //    ind++;
         }
 
-
     }
+    fclose(file);
+    endd = (struct machineCode*)malloc(sizeof(struct machineCode));
+    machineHead->next = endd;
+    *IC = tempIC;
+    *DC = tempDC;
+
+    return 0;
 }
+
+    NOTE:
+    I enter the var dataTable in the exist..
+    contuine from there and make te talif is the dataTable and contionue :!!!!!!!:
