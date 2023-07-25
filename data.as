@@ -1,4 +1,4 @@
-MAIN: first
+MAINasdasdasdakdkjalsdalkjdlkjadalsdlalkdlkj: first
 MAIN: second
 L2: asdasad
 MAIN: seconda
@@ -14,7 +14,7 @@ mcro m3
 adadasd
 asdasda
 endmcro
-
+L2: asdasad
 
 prn -5
 mcro m1
@@ -30,3 +30,5 @@ STR: .string “abcdef”
 LENGTH: .data 6,-9,15
 K : .data 22
 m1
+L2: asdasad
+MAIN: seconda

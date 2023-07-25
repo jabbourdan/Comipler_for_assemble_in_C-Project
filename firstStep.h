@@ -13,11 +13,12 @@
 
 
 int isSymbol(char line[], struct  dataTable* temp,struct  dataTable* tail,struct  dataTable* dataTable, struct  machineCode* dhead);
-int notExistSymbol(struct  dataTable* tail ,struct  dataTable* dataTable , char sname[]);
+int notExistSymbol(struct  dataTable* dataTable , char sname[]);
 int firstcheck(char* fileName, struct  dataTable* shead, struct  machineCode* dhead, int *IC, int *DC);
-int stringOrData(char line[] , int index, struct  machineCode* dhead);
-int stringArg(char line[] , int index, struct  machineCode* dhead);
-int dataArg(char line[] , int index, struct  machineCode* dhead);
+int stringOrData(char line[] , int index);
+int stringArg(char line[] , int index);
+int dataArg(char line[] , int index);
+int opcode(char line[], int ind ,struct  machineCode* dhead);
 
 
 #endif

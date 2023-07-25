@@ -12,11 +12,8 @@ int validSymbol(char line[],char sname[],int indexOfTheDots) {
         printf("The symbole name : '%s' is larger that 31 its not allowed\n",sname);
         return 0;
     }
-
-
     while(isspace(line[j]))
         j++;
-
     if(isdigit(line[j])){
         printf("The symbol begins with digit, this is the line %s\n",line);
         return 0;}
@@ -29,8 +26,8 @@ int validSymbol(char line[],char sname[],int indexOfTheDots) {
         }
 
     }
-    if(!isspace(line[indexOfTheDots+1])){
-        printf("\nERROR : The line is %s \n contain ':' without space after \n",line);
+    if(!isspace(line[indexOfTheDots+1]) || isspace((line[indexOfTheDots-1]))){
+        printf("\nERROR : The line is %s \n contain ':' wrong spaces \n",line);
         return 0;
     }
 

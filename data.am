@@ -1,11 +1,11 @@
-MAIN: first
+MAINasdasdasdakdkjalsdalkjdlkjadalsdlalkdlkj: first
 MAIN: second
 L2: asdasad
 MAIN: seconda
 
     2MAINada: jmp L1
 
-
+L2: asdasad
 
 prn -5
 bne LOOP
@@ -21,3 +21,5 @@ K : .data 22
 ADASDADASDASDASD AS DAS DA DSA
 sub @r1, @r4
 bne END 
+L2: asdasad
+MAIN: seconda

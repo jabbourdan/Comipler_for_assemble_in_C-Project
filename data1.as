@@ -1,4 +1,4 @@
-MAIN: mov @r3 ,LENGTH
+LOOP : jmp L1
 LOOP : jmp L1
 
 sub @r1, @r4
@@ -17,12 +17,13 @@ endmcro
 bne LOOP
 m1
 say123
-L1:QWDADSASDASDASDADSADASDADSADAADFADDSADASDASDJS mcrodfg
+
+L1: QWDADSASDASDASDADSADASDADSADAADFADDSADASDASDJS mcrodfg
 dgdg
 s
-
+L1: asdajsdajsda
 say123
 
 moA
-
+MAIN: asdasda
 moA
