@@ -95,8 +95,6 @@ int check_length_lines(char* filename) {
             maxLineLength = lineLength;
         }
     }
-
-    // Close the file
     fclose(file);
 
     length_line = maxLineLength +1;

@@ -6,7 +6,7 @@
 
 struct machineCode {
     char symbol[31];
-    char opcode [21];
+    char opcode [13];
     char funct [5];
     char sregister [5];
     char saddress[3];
@@ -14,8 +14,10 @@ struct machineCode {
     char daddress [3];
     char ssymbol [MAX_LINE_LENGTH];
     char dsymbol [MAX_LINE_LENGTH];
-    char dataorstring[MAX_LINE_LENGTH];
+    char stringordata[MAX_LINE_LENGTH];
     struct machineCode* next;
 };
 
+void machineCodeFunction(struct machineCode* head,char function[]);
+const char* funcBits(char op[]);
 #endif

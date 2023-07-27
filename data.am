@@ -1,11 +1,10 @@
-MAINasdasdasdakdkjalsdalkjdlkjadalsdlalkdlkj: first
-MAIN: second
-L2: asdasad
-MAIN: seconda
+MAIN: add asdad adasd
+L2: .data        2     , 213
+
+    MAIN2356: .data          11,1
+MAIN23: .data 11,1
 
     2MAINada: jmp L1
-
-L2: asdasad
 
 prn -5
 bne LOOP
@@ -14,10 +13,10 @@ sub @r1, @r4
 bne END 
 L1: inc K
 bne LOOP
-END  : stop
+END: stop
 STR: .string “abcdef”
-LENGTH: .data 6,-9,15
-K : .data 22
+LENGTH: .data 6,-9,15,
+a: .data 22
 ADASDADASDASDASD AS DAS DA DSA
 sub @r1, @r4
 bne END 

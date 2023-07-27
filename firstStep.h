@@ -18,7 +18,7 @@ int firstcheck(char* fileName, struct  dataTable* shead, struct  machineCode* dh
 int stringOrData(char line[] , int index);
 int stringArg(char line[] , int index);
 int dataArg(char line[] , int index);
-int opcode(char line[], int ind ,struct  machineCode* dhead);
+int opCode(char line[], int ind ,struct  machineCode* machineCode);
 
 
 #endif

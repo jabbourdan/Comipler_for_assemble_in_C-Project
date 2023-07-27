@@ -1,4 +1,4 @@
-LOOP : jmp L1
+LOOP:      .data 11, 12,312
 LOOP : jmp L1
 
 sub @r1, @r4
