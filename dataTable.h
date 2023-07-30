@@ -7,10 +7,8 @@
 
 struct dataTable  {
     char symbol [MAX_LINE_LENGTH];
-    int value;
-    int baseaddress;
-    int offset;
-    char attributes [5] ;
+    int numberOfValues;
+    int adress;
     struct dataTable* next;
 };
 

@@ -23,8 +23,6 @@ int isSymbol(char line[], struct dataTable *temp, struct dataTable *tail, struct
         if (validSymbol(line, sname, index)) {
             if (notExistSymbol(dataTable, sname)) {
                 strcpy(temp->symbol, sname);
-                strcpy(temp->attributes, "0000");
-                temp->attributes[0] = temp->attributes[0] + stringOrData(line, index + 1);
                 return 1;
             } else {
                 printf("\nerror: The symbol %s already exist in the file\n", sname);
@@ -117,7 +115,7 @@ int opCode(char line[], int index,
         oindex++;
         index++;
     }
-    machineCodeFunction(machineCode, opName);
+    machineCodeFunction(machineCode, opName,line);
     return index;
 }
 
@@ -137,14 +135,35 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
         temp = (struct dataTable *) malloc(sizeof(struct dataTable));
         strcpy(machineTemp->symbol, "null");
         if (isSymbol(line, temp, tail, dataHead, machineTemp)) {
-            machineHead->next = machineHead;
+            machineHead->next = machineTemp;
             machineHead = machineHead->next;
             strcpy(machineTemp->symbol, temp->symbol);
             machineTemp->next = NULL;
-            temp->value = tempIC;
-            temp->baseaddress = tempIC - tempIC % 16;
-            temp->offset = tempIC % 16;
             temp->next = NULL;
+            while (isspace(line[ind]))
+                ind++;
+            while (!isspace(line[ind]))
+                ind++;
+            if (stringOrData(line, ind)) {
+                if (strstr(line, ".data") != NULL) {
+                    if (validData(line, ind)) {
+                        value = stringOrData(line, ind);
+                        temp->numberOfValues=value;
+                        temp->adress=tempIC;
+                        isserTheNumbers(machineTemp,line,ind);
+                        tempIC = tempIC + value;
+                    }
+                }else if (validString(line, ind)) {
+                    value = stringOrData(line, ind);
+                    temp->numberOfValues=value;
+                    temp->adress=tempIC;
+                    tempIC = tempIC + value;
+                }
+            }else {
+                ind = opCode(line, ind, machineTemp);
+                //tempIC = tempIC + Instruction(line,ind,dtemp);
+                temp->numberOfValues=0;
+            }
             if (flag) {
                 *tail = *temp;
                 tail->next = NULL;
@@ -153,27 +172,6 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
                 tail->next = temp;
                 tail = tail->next;
             }
-            while (isspace(line[ind]))
-                ind++;
-            while (!isspace(line[ind]))
-                ind++;
-
-            if (stringOrData(line, ind)) {
-                if (strstr(line, ".data") != NULL) {
-                    if (validData(line, ind)) {
-                        value = stringOrData(line, ind);
-                        tempDC = tempDC + value;
-                        tempIC = tempIC + value;
-                    } else if (validString(line, ind)) {
-                        value = stringOrData(line, ind);
-                        tempDC = tempDC + value;
-                        tempIC = tempIC + value;
-                    }
-                }
-            }else {
-                ind = opCode(line, ind, machineTemp);
-                //tempIC = tempIC + Instruction(line,ind,dtemp);
-            }
             ind = 0;
         }
     }
@@ -181,6 +179,5 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
     endd = (struct machineCode *) malloc(sizeof(struct machineCode));
     machineHead->next = endd;
     *IC = tempIC;
-    *DC = tempDC;
     return 0;
     }

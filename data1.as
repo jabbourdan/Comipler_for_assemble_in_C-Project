@@ -1,5 +1,5 @@
-LOOP:      .data 11, 12,312
-LOOP : jmp L1
+LOOP: asdasdadadas
+LOOP1: jmp L1
 
 sub @r1, @r4
     bne END
@@ -21,7 +21,7 @@ say123
 L1: QWDADSASDASDASDADSADASDADSADAADFADDSADASDASDJS mcrodfg
 dgdg
 s
-L1: asdajsdajsda
+L1: mov
 say123
 
 moA

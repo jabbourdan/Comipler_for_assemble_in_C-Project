@@ -107,5 +107,5 @@ int validString(char line[],int index){
         }
         index++;
     }
-
+    return 1;
 }

@@ -58,7 +58,6 @@ int main(int argc, char *argv[]) {
         }
         firstcheck(fileEnd,dataHead,machineHead,&IC,&DC);
 
-
         free(file);
     }
     return 0;

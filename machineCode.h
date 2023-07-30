@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "globals.h"
+#include "validSyntax.h"
 
 struct machineCode {
     char symbol[31];
@@ -18,6 +19,9 @@ struct machineCode {
     struct machineCode* next;
 };
 
-void machineCodeFunction(struct machineCode* head,char function[]);
+void machineCodeFunction(struct machineCode* head,char function[],char line[]);
 const char* funcBits(char op[]);
+void isserTheNumbers(struct machineCode* head,char line[],int ind);
+char* printBinary(int number,int bits);
+int isNumeric(const char* str);
 #endif

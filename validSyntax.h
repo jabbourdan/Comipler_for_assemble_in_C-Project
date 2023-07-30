@@ -9,4 +9,5 @@
 int validSymbol(char line[], char sname[], int indexOfTheDots);
 int validData(char line[],int ind);
 int validString(char line[],int index);
+int returnIndexTheData(char line[],int index);
 #endif // VALIDSYNTAX_H
