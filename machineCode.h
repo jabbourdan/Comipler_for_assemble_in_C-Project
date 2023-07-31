@@ -21,7 +21,11 @@ struct machineCode {
 
 void machineCodeFunction(struct machineCode* head,char function[],char line[]);
 const char* funcBits(char op[]);
-void isserTheNumbers(struct machineCode* head,char line[],int ind);
-char* printBinary(int number,int bits);
+void insserTheNumbers(struct machineCode* head,char line[]);
+char* changeBinary(int number,int bits);
 int isNumeric(const char* str);
+void insertNode(struct machineCode* head, const char* symbol, int num);
+void insertTheString(struct machineCode* head,char line[]);
+void printTheString(struct machineCode* head,const char* token,char* symbol);
+void insertnodeString(struct machineCode* head ,const char* symbol,char ch);
 #endif

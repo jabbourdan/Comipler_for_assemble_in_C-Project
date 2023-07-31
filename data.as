@@ -1,9 +1,10 @@
-LENGTH: .data -225,   -12 , -1221
-MAIN2356: .string         "asdasdda"
-MAIN: add asdad adasd
+MAIN2356: add asdad
 L2: .data  2     , 213,12
+KA: .string  "asda"
+MAIN: add asdad adasd
+L22: .data  2     , 213,12
 
-    MAIN2356: .string         "asdasdda"
+    MAIN2356: .string  "asdasdda"
 MAIN23: .data 11,1
 
     2MAINada: jmp L1
@@ -27,7 +28,7 @@ m1
 L1: inc K
 bne LOOP
 END: stop
-STR: .string “abcdef”
+STR: .string "abcdef"
 LENGTH: .data 6,-9,15
 a: .data 22
 m1

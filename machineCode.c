@@ -61,7 +61,7 @@ void machineCodeFunction(struct machineCode* head,char function[],char line[]){
     strcpy(head->funct, binaryFunction);
     free(binaryFunction);
 }
-char* printBinary(int number, int bits) {
+char* changeBinary(int number, int bits) {
     static char binaryString[13]; // Fixed-size array to store the binary representation (12 bits + 1 null-terminator)
 
     int i;
@@ -106,7 +106,7 @@ void insertNode(struct machineCode* head, const char* symbol, int num) {
     }
 
     // Convert the number to binary and store it in the new node
-    char* binary = printBinary(num, 12);
+    char* binary = changeBinary(num, 12);
     if (binary == NULL) {
         free(newNode); // Free the newly allocated node before returning on error
         return;
@@ -123,11 +123,11 @@ void insertNode(struct machineCode* head, const char* symbol, int num) {
     }
 
     // Link the new node to the last node
-    head->next = newNode;
+    current->next = newNode;
 
 }
 
-void isserTheNumbers(struct machineCode* head,char line[],int ind){
+void insserTheNumbers(struct machineCode* head,char line[]){
     int num,firstTime=0;
     char *binary;
     char* symbol = head->symbol;
@@ -138,22 +138,104 @@ void isserTheNumbers(struct machineCode* head,char line[],int ind){
             if(!firstTime){
                 num = atoi(token); // Convert the token to an integer
                 //printf("Binary representation of %d: ", num);
-                binary = printBinary(num,12);
+                binary = changeBinary(num,12);
                 strcpy(head->opcode,binary);
+                strcpy(head->stringordata,".data");
                 firstTime=1;
-            }else {
+            } else {
                 num = atoi(token); // Convert the token to an integer
                 //printf("Binary representation of %d: ", num);
-                binary = printBinary(num,12);
+                binary = changeBinary(num,12);
                 insertNode(head, symbol, num);
-                //strcpy(head->opcode,binary);
+                strcpy(head->stringordata,".data");
 
                 //printf("%s",binary);
                 printf("\n");
             }
-
         }
-
         token = strtok(NULL, " ,"); // Move to the next token
+    }
+}
+
+void insertTheString(struct machineCode* head,char line[]){
+    int theString=0;
+    char* symbol = head->symbol;
+    const char* token = strtok(line, " ,"); // Split the line by spaces and commas
+    while (token != NULL) {
+        if(!strcmp(token, ".string")) {
+            theString=1;
+        }
+        if(theString && strcmp(token, ".string") != 0){
+            printTheString(head,token,symbol);
+        }
+        token = strtok(NULL, " ,"); // Move to the next token
+    }
+}
+char* convertBinaryString(char ch) {
+    char *binaryStr = (char*)malloc(13);// Fixed-size array to store the binary representation (12 bits + 1 null-terminator)
+    int i;
+    if (binaryStr == NULL) {
+        printf("Error: Memory allocation failed\n");
+        return NULL;
+    }
+    // Build the binary representation in the character array
+    for (i = 11; i >= 0; i--) {
+        binaryStr[11 - i] = (ch & (1 << i)) ? '1' : '0';
+    }
+    return binaryStr;
+}
+void insertnodeString(struct machineCode* head ,const char* symbol,char ch){
+    struct machineCode* newNode = (struct machineCode*)malloc(sizeof(struct machineCode));
+    char* binary=NULL;
+    if (newNode == NULL) {
+        printf("Error: Memory allocation failed\n");
+        return;
+    }
+    if(ch == '\0'){
+        binary = "000000000000";
+    }else {
+        binary = convertBinaryString(ch);
+    }
+    // Convert the number to binary and store it in the new node
+    strcpy(newNode->symbol, symbol);
+    strcpy(newNode->opcode, binary);
+    strcpy(newNode->stringordata, ".string");
+    newNode->next = NULL;
+
+    // Find the last node in the linked list
+    struct machineCode* current = head;
+    while (current->next != NULL) {
+        current = current->next;
+    }
+    // Link the new node to the last node
+    current->next = newNode;
+}
+
+void printTheString(struct machineCode* head,const char* token,char* symbol){
+    int index = 0,qua=0,firstTimeToInsert=0,firstTimeQue=0;
+    char* binary;
+    while(token[index] != '\0'){
+        if(token[index] == '"'){
+            if(!firstTimeQue) {
+                qua = 1;
+                firstTimeQue=1;
+                index++;
+                continue;
+            }else{
+                //put an new line at the end
+                insertnodeString(head, symbol, '\0');
+                break;
+            }
+        }
+        if(!firstTimeToInsert) {
+            binary = convertBinaryString(token[index]);
+            strcpy(head->opcode,binary);
+            strcpy(head->stringordata,".string");
+            firstTimeToInsert=1;
+        }else if (qua) {
+            insertnodeString(head, symbol, token[index]);
+            firstTimeToInsert=1;
+        }
+        index++;
     }
 }
