@@ -111,8 +111,35 @@ int opCode(char line[], int index, struct machineCode *machineCode) /* Return th
         oindex++;
         index++;
     }
-    machineCodeFunction(machineCode, opName,line);
+    if(!validTakesArgs(opName,line,index)){
+        printf("The line %s \nTakes wrong Number of args \n ",line);
+        return -1;
+    }
+    machineCodeFunction(machineCode, opName,line,index);
+    argFuntion(line,index,machineCode, opName);
     return index;
+}
+
+int extryOrExtery(char line[]){
+
+    int aindex = 0, index = 0 ;
+    char att[MAX_LINE_LENGTH];
+    if(line[index] == '\n')
+        return 0;
+    memset(att, '\0' , MAX_LINE_LENGTH);
+    while(isspace(line[index]))
+        index ++;
+    while (!isspace(line[index]) && line[index] != '\n')
+    {
+        att[aindex] = line[index];
+        aindex++;
+        index++;
+    }
+    if(!strcmp(".entry",att))
+        return(2);
+    if(!strcmp(".extern",att))
+        return(1);
+    return 0;
 }
 
 int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *machineHead, int *IC, int *DC) {
@@ -121,10 +148,10 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
     FILE *file = open_file(fileName, "r");
     struct dataTable *tail = NULL;
     struct machineCode *tailMachine = NULL;
-    tail = (struct dataTable *) malloc(sizeof(struct dataTable));
+    tail = (struct dataTable *)malloc(sizeof(struct dataTable));
     tail = dataHead;
 
-    tailMachine=(struct machineCode *) malloc(sizeof(struct machineCode));
+    tailMachine=(struct machineCode *)malloc(sizeof(struct machineCode));
     tailMachine=machineHead;
 
     memset(line, '\0', MAX_LINE_LENGTH);
@@ -134,12 +161,10 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
         machineTemp = (struct machineCode *) malloc(sizeof(struct machineCode));
         temp = (struct dataTable *) malloc(sizeof(struct dataTable));
         //strcpy(machineTemp->symbol, "null");
+        machineTemp->next = NULL;
+        temp->next = NULL;
         if (isSymbol(line, temp, tail, dataHead, machineTemp)) {
-            //machineHead->next = machineTemp;
-            //machineHead = machineHead->next;
             strcpy(machineTemp->symbol, temp->symbol);
-            machineTemp->next = NULL;
-            temp->next = NULL;
             while (isspace(line[ind]))
                 ind++;
             while (!isspace(line[ind]))
@@ -162,25 +187,49 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
                 }
             }else {
                 ind = opCode(line, ind, machineTemp);
-                //tempIC = tempIC + Instruction(line,ind,dtemp);
+                if(ind==-1){
+                    continue;
+                }
                 temp->numberOfValues=0;
             }
-            if (flag) {
-                *tail = *temp;
-                tail->next = NULL;
-                tailMachine->next =machineTemp;
-                tailMachine = tailMachine->next;
-                flag = 0;
-            } else {
-                tail->next = temp;
-                tail = tail->next;
-                while (tailMachine->next != NULL) {
-                    tailMachine = tailMachine->next;
-                }
-                tailMachine->next = machineTemp;
-            }
-            ind = 0;
+
         }
+        else if (stringOrData(line, ind)) {
+            if (strstr(line, ".data") != NULL) {
+                if (validData(line, ind)) {
+                    value = stringOrData(line, ind);
+                    temp->numberOfValues=value;
+                    temp->adress=tempIC;
+                    insserTheNumbers(machineTemp,line);
+                    tempIC = tempIC + value;
+                }
+            }else if (validString(line, ind)) {
+                value = stringOrData(line, ind);
+                temp->numberOfValues=value;
+                temp->adress=tempIC;
+                insertTheString(machineTemp,line);
+                tempIC = tempIC + value;
+            }
+        }else if(extryOrExtery(line) == 2){ //entry
+            if(validEntry(line)){
+
+            }
+        }
+        if (flag) {
+            *tail = *temp;
+            tail->next = NULL;
+            tailMachine->next =machineTemp;
+            tailMachine = tailMachine->next;
+            flag = 0;
+        } else {
+            tail->next = temp;
+            tail = tail->next;
+            while (tailMachine->next != NULL) {
+                tailMachine = tailMachine->next;
+            }
+            tailMachine->next = machineTemp;
+        }
+        ind = 0;
     }
     fclose(file);
     tailMachine = (struct machineCode *) malloc(sizeof(struct machineCode));

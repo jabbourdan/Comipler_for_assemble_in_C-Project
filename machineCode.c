@@ -4,7 +4,6 @@ const char* funcBits(char op[]) /*Returns the opcode type in decimal base*/
 {
     char *new = (char*)malloc(5 * sizeof(char));
     if (new == NULL) {
-        // Handle memory allocation failure if needed
         return NULL;
     }
     memset(new, '\0', 5);
@@ -44,7 +43,7 @@ const char* funcBits(char op[]) /*Returns the opcode type in decimal base*/
         strcpy(new, "-1");
     return new;
 }
-void machineCodeFunction(struct machineCode* head,char function[],char line[]){
+void machineCodeFunction(struct machineCode* head,char function[],char line[],int index){
     char *binaryFunction = funcBits(function);
     if(binaryFunction==NULL){
         printf("Error: Memory allocation failed in funcBits \n");
@@ -131,7 +130,7 @@ void insserTheNumbers(struct machineCode* head,char line[]){
     int num,firstTime=0;
     char *binary;
     char* symbol = head->symbol;
-    printf("The line is : %s",line);
+    //printf("The line is : %s",line);
     char* token = strtok(line, " ,"); // Split the line by spaces and commas
     while (token != NULL) {
         if(isNumeric(token)) {
@@ -150,7 +149,7 @@ void insserTheNumbers(struct machineCode* head,char line[]){
                 strcpy(head->stringordata,".data");
 
                 //printf("%s",binary);
-                printf("\n");
+                //printf("\n");
             }
         }
         token = strtok(NULL, " ,"); // Move to the next token
@@ -237,5 +236,51 @@ void printTheString(struct machineCode* head,const char* token,char* symbol){
             firstTimeToInsert=1;
         }
         index++;
+    }
+}
+
+int checkBothRegOrNot(char line[],int index){
+    int thereIsTwoArgs = 0; // 0 = no args 1 one arg ,2 two args
+    while (line[index] != '\0'){
+        if(line[index] == '@' && thereIsTwoArgs == 0){
+            thereIsTwoArgs =1;
+            index++;
+            continue;
+        }
+        if(line[index] == '@' && thereIsTwoArgs == 1){
+            thereIsTwoArgs =2;
+        }
+        index++;
+    }
+
+    return thereIsTwoArgs;
+}
+
+void argFuntion(char line[],int index, struct machineCode* head,char functionName[]){
+
+    printf("----%s----\n",functionName);
+    if(strcmp(functionName, "lea") == 0){
+        strcpy(head->saddress,"000000000000");
+        strcpy(head->daddress,"000000000000");
+        strcpy(head->dArg,"000000000000");
+        strcpy(head->sArg,"000000000000");
+    }else if(strcmp(functionName, "not") == 0 || strcmp(functionName, "clr") == 0 || strcmp(functionName, "inc") == 0 || strcmp(functionName, "dec") == 0 || strcmp(functionName, "jmp") == 0 ||
+    strcmp(functionName, "bne") == 0 || strcmp(functionName, "red") == 0 || strcmp(functionName, "prn") == 0 || strcmp(functionName, "jsr") == 0){
+        strcpy(head->saddress,"NULL");
+        strcpy(head->daddress,"000000000000");
+        strcpy(head->dArg,"000000000000");
+        strcpy(head->sArg,"NULL");
+    }else if(strcmp(functionName, "mov") == 0 || strcmp(functionName, "cmp") == 0 || strcmp(functionName, "add") == 0 || strcmp(functionName, "sub") == 0){
+        if(checkBothRegOrNot(line,index) == 2){
+            strcpy(head->saddress,"000000000000");
+            strcpy(head->daddress,"NULL");
+            strcpy(head->dArg,"NULL");
+            strcpy(head->sArg,"000000000000");
+        }else if(checkBothRegOrNot(line,index) != 2){
+            strcpy(head->saddress,"000000000000");
+            strcpy(head->daddress,"000000000000");
+            strcpy(head->dArg,"000000000000");
+            strcpy(head->sArg,"000000000000");
+        }
     }
 }

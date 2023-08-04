@@ -9,17 +9,17 @@ struct machineCode {
     char symbol[31];
     char opcode [13];
     char funct [5];
-    char sregister [5];
-    char saddress[3];
-    char dregister [5];
-    char daddress [3];
+    char sArg [MAX_LINE_LENGTH];
+    char saddress[13];
+    char dArg [MAX_LINE_LENGTH];
+    char daddress [13];
     char ssymbol [MAX_LINE_LENGTH];
     char dsymbol [MAX_LINE_LENGTH];
     char stringordata[MAX_LINE_LENGTH];
     struct machineCode* next;
 };
 
-void machineCodeFunction(struct machineCode* head,char function[],char line[]);
+void machineCodeFunction(struct machineCode* head,char function[],char line[],int index);
 const char* funcBits(char op[]);
 void insserTheNumbers(struct machineCode* head,char line[]);
 char* changeBinary(int number,int bits);
@@ -28,4 +28,5 @@ void insertNode(struct machineCode* head, const char* symbol, int num);
 void insertTheString(struct machineCode* head,char line[]);
 void printTheString(struct machineCode* head,const char* token,char* symbol);
 void insertnodeString(struct machineCode* head ,const char* symbol,char ch);
+void argFuntion(char line[],int index, struct machineCode* head,char functionName[]);
 #endif
