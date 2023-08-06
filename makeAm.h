@@ -18,7 +18,6 @@ int isMacroOrEndm(char line[]);
 void reWriteAmFile(struct Macro** head, const char* file, const char* fileAm);
 struct Macro* createNode(const char* name, const char* content);
 void freeList(struct Macro* head);
-void printList(struct Macro* head);
 void removeTrailingNewline(struct Macro* head);
 int insertTheMacro(struct Macro** head, const char* file);
 int isMacroNameExists(struct Macro* head, const char* name);

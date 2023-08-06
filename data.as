@@ -1,12 +1,12 @@
-L: .data 2 , 213
-.entry adads , aaaaASD , 1asdadadas
-
-AA21: not 1asdasd
+.entry asdas , v32
+    A2A21: not mjnlkj
+m2: not ljhlj
+v3: not 1asdasd
+    .string "adasda"
 MAIN: add asdad adasd
-L22: .data  2     , 213,12
+
 
     MAIN2356: .string  "asdasdda"
-MAIN23: .data 11,1
 
 mcro m1
      ADASDADASDASDASD AS DAS DA DSA

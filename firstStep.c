@@ -20,7 +20,10 @@ int isSymbol(char line[], struct dataTable *temp, struct dataTable *tail, struct
     }
 
     if (line[index] == ':') {
-        if (validSymbol(line, sname, index)) {
+        if(validSymbol(line, sname, index)!=1){
+            printf("This line %s\nHas Wrong format",line);
+        }
+        if (validSymbol(line, sname, index)==1) {
             if (notExistSymbol(dataTable, sname)) {
                 strcpy(temp->symbol, sname);
                 return 1;
@@ -32,22 +35,7 @@ int isSymbol(char line[], struct dataTable *temp, struct dataTable *tail, struct
     return 0;
 }
 
-int notExistSymbol(struct dataTable *dataTable, char sname[]) /*Checks if the symbol already exists*/
-{
-    struct dataTable *tailf = NULL;
-    tailf = (struct dataTable *) malloc(sizeof(struct dataTable));
-    tailf = dataTable;
-    while (tailf != NULL)  /*Run on all the symbols we have already found*/
-    {
-        if (!strcmp(tailf->symbol, sname)) {
-            return 0;
-        }
-        tailf = tailf->next;
-    }
-    free(tailf);
 
-    return 1;
-}
 
 int stringArg(char line[], int index)/*Summarize the number of chars in the string prompt*/
 {
@@ -143,7 +131,7 @@ int extryOrExtery(char line[]){
 }
 
 int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *machineHead, int *IC, int *DC) {
-    int tempDC = 0, tempIC = 100, ind = 0, flag = 1, value;
+    int tempDC = 0, tempIC = 100, ind = 0, flagData = 1,flagMachine =1, value,dataTB=0,machineTB=0;
     char line[MAX_LINE_LENGTH];
     FILE *file = open_file(fileName, "r");
     struct dataTable *tail = NULL;
@@ -160,7 +148,6 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
         struct dataTable *temp = NULL;
         machineTemp = (struct machineCode *) malloc(sizeof(struct machineCode));
         temp = (struct dataTable *) malloc(sizeof(struct dataTable));
-        //strcpy(machineTemp->symbol, "null");
         machineTemp->next = NULL;
         temp->next = NULL;
         if (isSymbol(line, temp, tail, dataHead, machineTemp)) {
@@ -171,12 +158,14 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
                 ind++;
             if (stringOrData(line, ind)) {
                 if (strstr(line, ".data") != NULL) {
-                    if (validData(line, ind)) {
+                    if (validateDataSyntax(line, ind)) {
                         value = stringOrData(line, ind);
                         temp->numberOfValues=value;
                         temp->adress=tempIC;
                         insserTheNumbers(machineTemp,line);
                         tempIC = tempIC + value;
+                        dataTB=1;
+                        machineTB=1;
                     }
                 }else if (validString(line, ind)) {
                     value = stringOrData(line, ind);
@@ -184,52 +173,65 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
                     temp->adress=tempIC;
                     insertTheString(machineTemp,line);
                     tempIC = tempIC + value;
+                    dataTB=1;
+                    machineTB=1;
                 }
             }else {
                 ind = opCode(line, ind, machineTemp);
                 if(ind==-1){
                     continue;
                 }
+                dataTB=1;
+                machineTB=1;
                 temp->numberOfValues=0;
             }
 
         }
         else if (stringOrData(line, ind)) {
             if (strstr(line, ".data") != NULL) {
-                if (validData(line, ind)) {
+                if (validateDataSyntax(line, ind)) {
                     value = stringOrData(line, ind);
-                    temp->numberOfValues=value;
-                    temp->adress=tempIC;
                     insserTheNumbers(machineTemp,line);
                     tempIC = tempIC + value;
+                    machineTB=1;
                 }
             }else if (validString(line, ind)) {
                 value = stringOrData(line, ind);
-                temp->numberOfValues=value;
-                temp->adress=tempIC;
                 insertTheString(machineTemp,line);
                 tempIC = tempIC + value;
+                machineTB=1;
             }
         }else if(extryOrExtery(line) == 2){ //entry
             if(validEntry(line)){
-
+                putTheEntryIn(dataHead,line,flagData);
+                flagData=0;
+                dataTB=0;
             }
         }
-        if (flag) {
+        if (flagData&&dataTB) {
             *tail = *temp;
             tail->next = NULL;
+            flagData=0;
+        } else if(dataTB) {
+            while (tail->next != NULL) {
+                tail = tail->next;
+            }
+            tail->next =temp;
+        }
+        if(flagMachine&&machineTB){
             tailMachine->next =machineTemp;
             tailMachine = tailMachine->next;
-            flag = 0;
-        } else {
-            tail->next = temp;
-            tail = tail->next;
+            flagMachine = 0;
+        }else if(machineTB){
             while (tailMachine->next != NULL) {
                 tailMachine = tailMachine->next;
             }
             tailMachine->next = machineTemp;
         }
         ind = 0;
+        dataTB=0;
+        machineTB=0;
+
     }
     fclose(file);
     tailMachine = (struct machineCode *) malloc(sizeof(struct machineCode));

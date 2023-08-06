@@ -114,14 +114,6 @@ struct Macro* createNode(const char* name, const char* content) {
     return newNode;
 }
 
-void printList(struct Macro* head) {
-    struct Macro* current = head;
-    while (current != NULL) {
-        printf("Name: %s, Content: %s\n", current->name, current->content);
-        current = current->next;
-    }
-}
-
 void freeList(struct Macro* head) {
     struct Macro* current = head;
     while (current != NULL) {
