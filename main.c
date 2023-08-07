@@ -27,8 +27,6 @@ int main(int argc, char *argv[]) {
         dataHead = (struct dataTable*)malloc(sizeof(struct dataTable));
         dataHead->next = NULL;
         machineHead = (struct machineCode*)malloc(sizeof(struct machineCode));
-       // machineTail = (struct machineCode*)malloc(sizeof(struct machineCode));
-        //machineTail = machineHead;
         machineHead->next = NULL;
         char *file = (char *)malloc((filenameLength + extensionLength + 1) * sizeof(char));
         fileEnd = file;

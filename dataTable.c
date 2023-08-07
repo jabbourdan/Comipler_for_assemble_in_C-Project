@@ -15,8 +15,8 @@ int notExistSymbol(struct dataTable *dataTable, char sname[]) /*Checks if the sy
 
     return 1;
 }
-void putTheEntryIn(struct dataTable* dataHead, char line[],int flag) {
-    int index = 0;
+void putTheEntryIn(struct dataTable* dataHead, char line[],int flag,const char * type) {
+    int index = 0,tokenLength;
     char *substring;
     char att[MAX_LINE_LENGTH];
     struct dataTable* temp1 = NULL; // Point to the existing linked list
@@ -44,8 +44,13 @@ void putTheEntryIn(struct dataTable* dataHead, char line[],int flag) {
         }
         temp1 = (struct dataTable *) malloc(sizeof(struct dataTable));
         temp1->next = NULL;
+        tokenLength= strlen(token);
+        if (tokenLength > 0 && token[tokenLength - 1] == '\n') {
+            // Remove the last character by setting it to \0
+            token[tokenLength - 1] = '\0';
+        }
         strcpy(temp1->symbol ,token);
-        strcpy(temp1->type,"entry");
+        strcpy(temp1->type,type);
         if(flag){
             *dataHead = *temp1;
             dataHead->next = NULL;
