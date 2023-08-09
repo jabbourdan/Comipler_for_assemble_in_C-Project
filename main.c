@@ -47,7 +47,6 @@ int main(int argc, char *argv[]) {
                 struct Macro* head = NULL;
                 insertTheMacro(&head, file);
                 reWriteAmFile(&head, file,fileEnd);
-                //printList(head);
                 freeList(head);
 
             }
@@ -55,7 +54,7 @@ int main(int argc, char *argv[]) {
 
         }
         firstcheck(fileEnd,dataHead,machineHead,&IC,&DC);
-
+        secondCheck(fileEnd,dataHead,machineHead,&IC,&DC);
         free(file);
     }
     return 0;
