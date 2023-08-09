@@ -130,7 +130,6 @@ void insserTheNumbers(struct machineCode* head,char line[]){
     int num,firstTime=0;
     char *binary;
     char* symbol = head->symbol;
-    //printf("The line is : %s",line);
     char* token = strtok(line, " ,"); // Split the line by spaces and commas
     while (token != NULL) {
         if(isNumeric(token)) {

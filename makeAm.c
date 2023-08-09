@@ -75,8 +75,8 @@ void reWriteAmFile(struct Macro** head, const char* file, const char* fileAm) {
 
                 while (word != NULL) {
                     if (strcmp(word, temp->name) == 0) {
-                        // Replace the word with the macro content
-                        fprintf(destinationFile, "%s ", temp->content);
+
+                        fprintf(destinationFile, "%s", temp->content);
                         fprintf(destinationFile, "\n");
 
                         lineModified = 1;
@@ -158,11 +158,9 @@ int insertTheMacro(struct Macro** head, const char* file) {
         printf("Failed to open file\n");
         return 1;
     }
-
     // Variables to store the current macro being processed and content reading flag
     struct Macro* newMacro = NULL;
     int isReadingContent = 0;
-
     // Read each line of the file
     while (fgets(line, sizeof(line), inputFile)) {
         if (strcmp(line, "\n") == 0 && foundMcro && isReadingContent) {

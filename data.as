@@ -1,34 +1,16 @@
-.entry asdas , v32
-    A2A21: not mjnlkj
-m2: not ljhlj
-v3: not 1asdasd
-    .string "adasda"
-MAIN: add asdad adasd
-
-
-    MAIN2356: .string  "asdasdda"
-
-mcro m1
-     ADASDADASDASDASD AS DAS DA DSA
-    sub @r1, @r4
-    bne END
-endmcro
-
-mcro m3
-adadasd
-asdasda
-endmcro
+.entry LENGTH
+    .extern W
+MAIN: mov @r3 ,LENGTH
+LOOP: jmp L1
 prn -5
-mcro m1
-sub @r2, @r4
-    bne END
-endmcro
-bne LOOP
-m1
-
-bne LOOP
+bne W
+sub @r1, @r4
+    bne L3
+L1: inc K
+    .entry LOOP
+jmp W
 END: stop
-STR: .string "abcdef"
+STR: .string "abcdefadsa"
 LENGTH: .data 6,-9,15
-a: .data 22
-m1
+K: .data 22
+    .extern L3

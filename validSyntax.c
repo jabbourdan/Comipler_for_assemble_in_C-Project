@@ -150,7 +150,6 @@ char* returnSource(char line[],int index) {
 char* returnDest(char line[],int index) {
     char *desArg = (char *) malloc(MAX_LINE_LENGTH * sizeof(char));
     int desIndex = 0;
-    char c;
     while (line[index] != '\0') {
         while (isspace(line[index]) == 0) {
             index++;
