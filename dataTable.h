@@ -12,6 +12,7 @@ struct dataTable  {
     char type[8];//if its external or what like step 9
     struct dataTable* next;
 };
-void putTheEntryIn(struct dataTable * temp,char line[],int flag,const char * type);
+void putTheEntryOrExternIn(struct dataTable * temp,char line[],int flag,const char * type,int index);
 int notExistSymbol(struct dataTable *dataTable, char sname[]);
+int theSymboleIsEntryOrExtern(struct dataTable *dataTable, char sname[]);
 #endif

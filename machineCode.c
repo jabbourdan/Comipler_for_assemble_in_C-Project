@@ -44,7 +44,7 @@ const char* funcBits(char op[]) /*Returns the opcode type in decimal base*/
     return new;
 }
 void machineCodeFunction(struct machineCode* head,char function[],char line[],int index){
-    char *binaryFunction = funcBits(function);
+    const char *binaryFunction = funcBits(function);
     if(binaryFunction==NULL){
         printf("Error: Memory allocation failed in funcBits \n");
         return;
@@ -58,7 +58,7 @@ void machineCodeFunction(struct machineCode* head,char function[],char line[],in
         strcpy(head->funct, binaryFunction);
     }
     strcpy(head->funct, binaryFunction);
-    free(binaryFunction);
+    //free(binaryFunction);
 }
 char* changeBinary(int number, int bits) {
     static char binaryString[13]; // Fixed-size array to store the binary representation (12 bits + 1 null-terminator)
@@ -239,8 +239,8 @@ void printTheString(struct machineCode* head,const char* token,char* symbol){
     }
 }
 
-int checkBothRegOrNot(char line[],int index){
-    int thereIsTwoArgs = 0; // 0 = no args 1 one arg ,2 two args
+int checkBothRegOrNot(char line[]){
+    int thereIsTwoArgs = 0,index =0;// 0 = no args 1 one arg ,2 two args
     while (line[index] != '\0'){
         if(line[index] == '@' && thereIsTwoArgs == 0){
             thereIsTwoArgs =1;
@@ -258,7 +258,7 @@ int checkBothRegOrNot(char line[],int index){
 
 void argFuntion(char line[],int index, struct machineCode* head,char functionName[]){
 
-    printf("----%s----\n",functionName);
+    //printf("----%s----\n",functionName);
     if(strcmp(functionName, "lea") == 0){
         strcpy(head->saddress,"000000000000");
         strcpy(head->daddress,"000000000000");
@@ -271,12 +271,12 @@ void argFuntion(char line[],int index, struct machineCode* head,char functionNam
         strcpy(head->dArg,"000000000000");
         strcpy(head->sArg,"NULL");
     }else if(strcmp(functionName, "mov") == 0 || strcmp(functionName, "cmp") == 0 || strcmp(functionName, "add") == 0 || strcmp(functionName, "sub") == 0){
-        if(checkBothRegOrNot(line,index) == 2){
+        if(checkBothRegOrNot(line) == 2){
             strcpy(head->saddress,"000000000000");
             strcpy(head->daddress,"NULL");
             strcpy(head->dArg,"NULL");
             strcpy(head->sArg,"000000000000");
-        }else if(checkBothRegOrNot(line,index) != 2){
+        }else if(checkBothRegOrNot(line) != 2){
             strcpy(head->saddress,"000000000000");
             strcpy(head->daddress,"000000000000");
             strcpy(head->dArg,"000000000000");

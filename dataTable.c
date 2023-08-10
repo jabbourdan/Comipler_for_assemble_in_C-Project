@@ -15,8 +15,23 @@ int notExistSymbol(struct dataTable *dataTable, char sname[]) /*Checks if the sy
 
     return 1;
 }
-void putTheEntryIn(struct dataTable* dataHead, char line[],int flag,const char * type) {
-    int index = 0,tokenLength;
+
+int theSymboleIsEntryOrExtern(struct dataTable *dataTable, char sname[]){
+    struct dataTable* current = dataTable;
+    while (current != NULL && !strcmp(current->symbol, sname)) {
+        current = current->next;
+    }
+    if (current != NULL) {
+        current->appear = 1;
+        return 1;
+    } else {
+        printf("Node with target data not found.\n");
+    }
+    return 0;
+}
+
+void putTheEntryOrExternIn(struct dataTable* dataHead, char line[],int flag,const char * type,int index) {
+    int tokenLength;
     char *substring;
     char att[MAX_LINE_LENGTH];
     struct dataTable* temp1 = NULL; // Point to the existing linked list
