@@ -1,8 +1,21 @@
 #include "firstStep.h"
 
+int is_newline_or_spaces(const char *line) {
+    // Check if the line is empty (contains only whitespace characters)
+    size_t len = strlen(line);
+    size_t i;
+    int is_empty = 1;
+    for (i = 0; i < len; i++) {
+        if (!isspace((unsigned char)line[i])) {
+            is_empty = 0;
+            break;
+        }
+    }
+    int begins_with_newline = line[0] == '\n';
 
-int isSymbol(char line[], struct dataTable *temp, struct dataTable *tail, struct dataTable *dataTable,
-             struct machineCode *dhead) {
+    return is_empty || begins_with_newline;
+}
+int isSymbol(char line[], struct dataTable *temp, struct dataTable *dataTable,int step) {
     int index = 0, sindex = 0;
     char sname[MAX_LINE_LENGTH];
     memset(sname, '\0', MAX_LINE_LENGTH);
@@ -12,7 +25,7 @@ int isSymbol(char line[], struct dataTable *temp, struct dataTable *tail, struct
         index++;
     while (line[index] != '\n' && line[index] != ':') {
 
-        if (line[index] == ":")
+        if (line[index] ==':')
             break;
         sname[sindex] = line[index];
         sindex++;
@@ -24,10 +37,12 @@ int isSymbol(char line[], struct dataTable *temp, struct dataTable *tail, struct
             printf("This line %s\nHas Wrong format",line);
         }
         if (validSymbol(line, sname, index)==1) {
-            if (notExistSymbol(dataTable, sname)) {
+            if (notExistSymbol(dataTable, sname) && step==1) {
                 strcpy(temp->symbol, sname);
                 return 1;
-            } else {
+            } else if(step==2){
+                return 1;
+            }else {
                 printf("\nerror: The symbol %s already exist in the file\n", sname);
             }
         }
@@ -108,9 +123,9 @@ int opCode(char line[], int index, struct machineCode *machineCode) /* Return th
     return index;
 }
 
-int extryOrExtery(char line[]){
+int extryOrExtery(char line[],int index){
 
-    int aindex = 0, index = 0 ;
+    int aindex = 0 ;
     char att[MAX_LINE_LENGTH];
     if(line[index] == '\n')
         return 0;
@@ -129,6 +144,21 @@ int extryOrExtery(char line[]){
         return(1);
     return 0;
 }
+int numOfArg(struct  machineCode* machineCode,char line[]){
+    if(!strcmp(machineCode->funct,"0000") || !strcmp(machineCode->funct,"0001") || !strcmp(machineCode->funct,"0110") || !strcmp(machineCode->funct,"0010") ||!strcmp(machineCode->funct,"0011"))
+        if(checkBothRegOrNot(line)==2 && strcmp(machineCode->funct,"0110")){ //not lea
+            return 2;
+        }else
+            return 3;
+    else if(!strcmp(machineCode->funct,"0100") || !strcmp(machineCode->funct,"0101") || !strcmp(machineCode->funct,"0111") || !strcmp(machineCode->funct,"1000") || !strcmp(machineCode->funct,"1001") ||
+            !strcmp(machineCode->funct,"1010")||!strcmp(machineCode->funct,"1011") || !strcmp(machineCode->funct,"1101") || !strcmp(machineCode->funct,"1100"))
+        return 2;
+    else if(!strcmp(machineCode->funct,"1111") || !strcmp(machineCode->funct,"1110"))
+        return 1;
+    else
+        return 0;
+
+}
 
 int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *machineHead, int *IC, int *DC) {
     int tempDC = 0, tempIC = 100, ind = 0, flagData = 1,flagMachine =1, value,dataTB=0,machineTB=0;
@@ -144,13 +174,17 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
 
     memset(line, '\0', MAX_LINE_LENGTH);
     while (fgets(line, MAX_LINE_LENGTH, file)) {
+        if (is_newline_or_spaces(line)) {
+            continue;
+        }
+
         struct machineCode *machineTemp = NULL;
         struct dataTable *temp = NULL;
         machineTemp = (struct machineCode *) malloc(sizeof(struct machineCode));
         temp = (struct dataTable *) malloc(sizeof(struct dataTable));
         machineTemp->next = NULL;
         temp->next = NULL;
-        if (isSymbol(line, temp, tail, dataHead, machineTemp)) {
+        if (isSymbol(line, temp, tail,1)) {
             strcpy(machineTemp->symbol, temp->symbol);
             while (isspace(line[ind]))
                 ind++;
@@ -164,6 +198,7 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
                         temp->adress=tempIC;
                         insserTheNumbers(machineTemp,line);
                         tempIC = tempIC + value;
+                        tempDC = tempDC + value;
                         dataTB=1;
                         machineTB=1;
                     }
@@ -173,17 +208,32 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
                     temp->adress=tempIC;
                     insertTheString(machineTemp,line);
                     tempIC = tempIC + value;
+                    tempDC = tempDC + value;
                     dataTB=1;
                     machineTB=1;
                 }
-            }else {
+            }else if(extryOrExtery(line,ind) == 2){ //entry
+                if(validEntry(line)){
+                    putTheEntryOrExternIn(dataHead,line,flagData,"entry",ind);
+                    flagData=0;
+                    dataTB=0;
+                }
+            }else if(extryOrExtery(line,ind) == 1){//extern
+                if(validEntry(line)) {
+                    putTheEntryOrExternIn(dataHead, line, flagData, "extern", 0);
+                    flagData = 0;
+                    dataTB = 0;
+                }
+            }
+            else {
                 ind = opCode(line, ind, machineTemp);
                 if(ind==-1){
                     continue;
                 }
+                temp->adress=tempIC;
+                tempIC=tempIC + numOfArg(machineTemp,line);
                 dataTB=1;
                 machineTB=1;
-                temp->numberOfValues=0;
             }
 
         }
@@ -193,28 +243,40 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
                     value = stringOrData(line, ind);
                     insserTheNumbers(machineTemp,line);
                     tempIC = tempIC + value;
+                    tempDC = tempDC + value;
                     machineTB=1;
                 }
             }else if (validString(line, ind)) {
                 value = stringOrData(line, ind);
                 insertTheString(machineTemp,line);
                 tempIC = tempIC + value;
+                tempDC = tempDC + value;
                 machineTB=1;
             }
-        }else if(extryOrExtery(line) == 2){ //entry
+        }else if(extryOrExtery(line,0) == 2){ //entry
             if(validEntry(line)){
-                putTheEntryIn(dataHead,line,flagData,"entry");
+                putTheEntryOrExternIn(dataHead,line,flagData,"entry",0);
                 flagData=0;
                 dataTB=0;
             }
-        }else if(extryOrExtery(line) == 1){//extern
-            putTheEntryIn(dataHead,line,flagData,"extern");
-            flagData=0;
-            dataTB=0;
-        }else if(extryOrExtery(line) == 0){//if not entry or extern (if it's a regular function like move ...)
+        }else if(extryOrExtery(line,0) == 1){//extern
+            if(validEntry(line)) {
+                putTheEntryOrExternIn(dataHead, line, flagData, "extern", 0);
+                flagData = 0;
+                dataTB = 0;
+            }
+        }else if(extryOrExtery(line,0) == 0){//if not entry or extern (if it's a regular function like move ...)
             while(isspace(line[ind])){
                 ind++;
             }
+            ind = opCode(line, ind, machineTemp);
+            if(ind==-1){
+                continue;
+            }
+            machineTB=1;
+            temp->adress=tempIC;
+            tempIC=tempIC + numOfArg(machineTemp,line);
+
         }
         if (flagData&&dataTB) {
             *tail = *temp;
@@ -227,8 +289,8 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
             tail->next =temp;
         }
         if(flagMachine&&machineTB){
-            tailMachine->next =machineTemp;
-            tailMachine = tailMachine->next;
+            *tailMachine = *machineTemp;
+            tailMachine ->next=NULL;
             flagMachine = 0;
         }else if(machineTB){
             while (tailMachine->next != NULL) {
@@ -245,5 +307,6 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
     tailMachine = (struct machineCode *) malloc(sizeof(struct machineCode));
     machineHead->next = tailMachine;
     *IC = tempIC;
+    *DC = tempDC;
     return 0;
 }

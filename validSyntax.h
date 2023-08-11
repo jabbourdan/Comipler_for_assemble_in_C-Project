@@ -12,4 +12,7 @@ int returnIndexTheData(char line[],int index);
 int validTakesArgs(char functionName[],char line[],int index);
 int validateDataSyntax(char line[],int index);
 int validEntry(char line[]);
+char* returnDest(char line[],int index);
+char* returnSource(char line[],int index);
+int validArgsFun(char functionName[],char* firsArg,char* secondArg);
 #endif // VALIDSYNTAX_H

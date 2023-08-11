@@ -130,45 +130,42 @@ char* returnSource(char line[],int index) {
     if(line[index] == '\n'){
         return NULL;
     }
-    while (line[index] != '\0') {
-        while (isspace(line[index]) == 0) {
-            index++;
-        }
-        while (line[index] != '\0' || isspace(line[index])) {
-            sourceArg[sourceIndex] = line[index];
-            sourceIndex++;
-            index++;
-        }
-
+    while (isspace(line[index])) {
+        index++;
+    }
+    while (line[index] != '\0'&&!isspace(line[index])) {
+        sourceArg[sourceIndex] = line[index];
+        sourceIndex++;
+        index++;
     }
     if(sourceIndex==0){
         return NULL;
     }
+    sourceArg[sourceIndex] = '\0';
     return sourceArg;
 }
 
 char* returnDest(char line[],int index) {
     char *desArg = (char *) malloc(MAX_LINE_LENGTH * sizeof(char));
     int desIndex = 0;
-    while (line[index] != '\0') {
-        while (isspace(line[index]) == 0) {
-            index++;
+    while (isspace(line[index]) == 0) {
+        index++;
+    }
+    while (line[index] != '\0' ) {
+        index++;
+        if(line[index]== ' '){
+            break;
         }
-        while (line[index] != '\0' ) {
-            index++;
-            if(line[index]== ' '){
-                break;
-            }
-        }
-        while (line[index] != '\0' || isspace(line[index])) {
-            desArg[desIndex] = line[index];
-            desIndex++;
-            index++;
-        }
+    }
+    while (line[index] != '\0' || isspace(line[index])) {
+        desArg[desIndex] = line[index];
+        desIndex++;
+        index++;
     }
     if(desIndex==0){
         return NULL;
     }
+    desArg[desIndex-1] = '\0';
     return desArg;
 }
 
@@ -194,10 +191,50 @@ int validTakesArgs(char functionName[],char line[],int index){
     free(secondArg);
     return 1;
 }
+int retrunTheNumberOfThetypeOfThearg(char* arg){
+    int index = 0;
+    if(arg==NULL)return 0;
+    while(isspace(arg[index]) || arg[index] == ',')index++;
+    if(!strcmp(arg,"@r1") || !strcmp(arg,"@r2") || !strcmp(arg,"@r3") || !strcmp(arg,"@r4") ||!strcmp(arg,"@r5") || !strcmp(arg,"@r6") || !strcmp(arg,"@r7")){
+        return 5;
+    }else if(arg[index] == '-' || isdigit(arg[index])){
+        while(arg[index] != '\0'){
+            if(!isdigit(arg[index])){
+                printf("The symbol is %s Take wrong type arg\n",arg);
+                return 0;
+            }
+            index++;
+        }
+        return 1;
+    }else if(isalpha(arg[index])){
+        return 3;
+    }else
+        printf("The symbol is %s Take wrong type arg\n",arg);
+        return 0;
+}
 
-int validFunctionArgs(char functionName[],char line[],int index){
-    char* firstArg= returnSource(line,index);
-    char* secondArg= returnDest(line,index);
+int validArgsFun(char symbol[],char* firstArg,char* secondArg){
+    int firstTpye=retrunTheNumberOfThetypeOfThearg(firstArg);
+    int secondTpye=retrunTheNumberOfThetypeOfThearg(secondArg);
+    int valid1,valid2;
+    if(!strcmp(symbol, "mov") || !strcmp(symbol, "sub") || !strcmp(symbol, "add")){
+        if(secondTpye==1){
+            printf("The symbol is %s Take wrong type arg\n",symbol);
+            return 0;
+        }
+    }else if(!strcmp(symbol, "lea")){
+        if(firstTpye==1 || firstTpye==5 || secondTpye ==1){
+            printf("The symbol is %s Take wrong type arg\n",symbol);
+            return 0;
+        }
+    }else if(!strcmp(symbol, "not") || !strcmp(symbol, "clr") || !strcmp(symbol, "inc") || !strcmp(symbol, "dec") ||
+            !strcmp(symbol, "jmp") || !strcmp(symbol, "bne") || !strcmp(symbol, "red") || !strcmp(symbol, "jsr")){
+        if(firstTpye==1){
+            printf("The symbol is %s Take wrong type arg\n",symbol);
+            return 0;
+        }
+    }
+    return 1;
 
 }
 

@@ -10,15 +10,13 @@
 #include "dataTable.h"
 #include "machineCode.h"
 #include "validSyntax.h"
-
-
-int isSymbol(char line[], struct  dataTable* temp,struct  dataTable* tail,struct  dataTable* dataTable, struct  machineCode* dhead);
-int notExistSymbol(struct  dataTable* dataTable , char sname[]);
+#include "secondStep.h"
+int isSymbol(char line[], struct  dataTable* temp,struct  dataTable* dataTable,int step);
 int firstcheck(char* fileName, struct  dataTable* shead, struct  machineCode* dhead, int *IC, int *DC);
 int stringOrData(char line[] , int index);
 int stringArg(char line[] , int index);
 int dataArg(char line[] , int index);
 int opCode(char line[], int ind ,struct  machineCode* machineCode);
-
-
+int extryOrExtery(char line[],int index);
+int numOfArg(struct  machineCode* machineCode,char line[]);
 #endif

@@ -7,12 +7,12 @@
 
 struct machineCode {
     char symbol[31];
-    char opcode [13];
+    char opcode [MAX_BITES];
     char funct [5];
-    char sArg [MAX_LINE_LENGTH];
-    char saddress[13];
-    char dArg [MAX_LINE_LENGTH];
-    char daddress [13];
+    char firstArg [MAX_LINE_LENGTH];
+    char firstArgAddress[MAX_BITES];
+    char secondArg [MAX_LINE_LENGTH];
+    char secondArgAddress [MAX_BITES];
     char ssymbol [MAX_LINE_LENGTH];
     char dsymbol [MAX_LINE_LENGTH];
     char stringordata[MAX_LINE_LENGTH];
@@ -30,4 +30,5 @@ void printTheString(struct machineCode* head,const char* token,char* symbol);
 void insertnodeString(struct machineCode* head ,const char* symbol,char ch);
 int checkBothRegOrNot(char line[]);
 void argFuntion(char line[],int index, struct machineCode* head,char functionName[]);
+void updateTheMachineOfTheFunction(char line[],int index,struct machineCode* head,int position);
 #endif

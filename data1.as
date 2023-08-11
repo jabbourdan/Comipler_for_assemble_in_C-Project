@@ -1,29 +1,15 @@
-LOOP: asdasdadadas
-LOOP1: jmp L1
-
+V2: .entry LENGTH
+    .extern W
+    .string "abcdef"
+MAIN: mov @r3 ,LENGTH
+LOOP: jmp L1
+prn -5
+bne LOOP
 sub @r1, @r4
     bne END
-prn -5
-mcro movqa
-say123say123say
-asdasdkjsdkahudha dkljd kljsadklaj klj
-endmcro
-
-mcro say234
-say234say234say234say234say234
-say234say234say234say234
-endmcro
-
+L1: inc K
 bne LOOP
-m1
-say123
+END: stop
 
-L1: QWDADSASDASDASDADSADASDADSADAADFADDSADASDASDJS mcrodfg
-dgdg
-s
-L1: mov
-say123
-
-moA
-MAIN: asdasda
-moA
+LENGTH: .data 6,-9,15
+K: .data 22

@@ -130,6 +130,7 @@ void insserTheNumbers(struct machineCode* head,char line[]){
     int num,firstTime=0;
     char *binary;
     char* symbol = head->symbol;
+    //printf("The line is : %s",line);
     char* token = strtok(line, " ,"); // Split the line by spaces and commas
     while (token != NULL) {
         if(isNumeric(token)) {
@@ -259,27 +260,86 @@ void argFuntion(char line[],int index, struct machineCode* head,char functionNam
 
     //printf("----%s----\n",functionName);
     if(strcmp(functionName, "lea") == 0){
-        strcpy(head->saddress,"000000000000");
-        strcpy(head->daddress,"000000000000");
-        strcpy(head->dArg,"000000000000");
-        strcpy(head->sArg,"000000000000");
+        strcpy(head->firstArgAddress,"000000000000");
+        strcpy(head->secondArgAddress,"000000000000");
+        strcpy(head->secondArg,"000000000000");
+        strcpy(head->firstArg,"000000000000");
     }else if(strcmp(functionName, "not") == 0 || strcmp(functionName, "clr") == 0 || strcmp(functionName, "inc") == 0 || strcmp(functionName, "dec") == 0 || strcmp(functionName, "jmp") == 0 ||
-    strcmp(functionName, "bne") == 0 || strcmp(functionName, "red") == 0 || strcmp(functionName, "prn") == 0 || strcmp(functionName, "jsr") == 0){
-        strcpy(head->saddress,"NULL");
-        strcpy(head->daddress,"000000000000");
-        strcpy(head->dArg,"000000000000");
-        strcpy(head->sArg,"NULL");
+             strcmp(functionName, "bne") == 0 || strcmp(functionName, "red") == 0 || strcmp(functionName, "prn") == 0 || strcmp(functionName, "jsr") == 0){
+        strcpy(head->firstArgAddress,"000000000000");
+        strcpy(head->secondArgAddress,"NULL");
+        strcpy(head->secondArg,"NULL");
+        strcpy(head->firstArg,"000000000000");
     }else if(strcmp(functionName, "mov") == 0 || strcmp(functionName, "cmp") == 0 || strcmp(functionName, "add") == 0 || strcmp(functionName, "sub") == 0){
         if(checkBothRegOrNot(line) == 2){
-            strcpy(head->saddress,"000000000000");
-            strcpy(head->daddress,"NULL");
-            strcpy(head->dArg,"NULL");
-            strcpy(head->sArg,"000000000000");
+            strcpy(head->firstArgAddress,"000000000000");
+            strcpy(head->secondArgAddress,"NULL");
+            strcpy(head->secondArg,"NULL");
+            strcpy(head->firstArg,"000000000000");
         }else if(checkBothRegOrNot(line) != 2){
-            strcpy(head->saddress,"000000000000");
-            strcpy(head->daddress,"000000000000");
-            strcpy(head->dArg,"000000000000");
-            strcpy(head->sArg,"000000000000");
+            strcpy(head->firstArgAddress,"000000000000");
+            strcpy(head->secondArgAddress,"000000000000");
+            strcpy(head->secondArg,"000000000000");
+            strcpy(head->firstArg,"000000000000");
         }
+    }
+}
+
+void updateTheFunction(char ,char index,struct machineCode* head,int position){
+    struct machineCode* current = head;
+    int currentPosition = 0;
+    if (head == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+    while (current != NULL) {
+        if (currentPosition == position) {
+            strcpy(current->firstArg, "");
+            return;
+        }
+        current = current->next;
+        currentPosition++;
+    }
+}
+void updateMachineAtPosition(struct machineCode* head,int position,char* firstArg,char* secondArg){
+    struct machineCode* current = head;
+    int currentPosition = 0;
+    if (head == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+    while (current != NULL) {
+        if (currentPosition == position) {
+            if(firstArg!=NULL){
+                strcpy(current->firstArg , firstArg);
+            }
+            if(secondArg!=NULL){
+                strcpy(current->secondArg , secondArg);
+            }
+            return;
+        }
+        current = current->next;
+        currentPosition++;
+    }
+
+}
+void updateTheMachineOfTheFunction(char line[],int index,struct machineCode* head,int position){
+    char symbol[MAX_SYMBOL_LENGTH];
+    char sAddress[MAX_BITES],dAddress[MAX_BITES];
+    int sIndex=0,dIndex=0,syIndex=0;
+    char* firstArg,*secondArg;
+    while(isspace(line[index])){
+        index++;
+    }
+    while(!isspace(line[index])){
+        symbol[syIndex] = line[index];
+        index++;
+        syIndex++;
+    }
+    firstArg= returnSource(line,index);
+    secondArg= returnDest(line,index);
+    if(validArgsFun(symbol,firstArg,secondArg)){
+        updateMachineAtPosition(head,position,firstArg,secondArg);
+        return;
     }
 }
