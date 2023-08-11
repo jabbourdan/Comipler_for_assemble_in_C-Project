@@ -28,5 +28,6 @@ void insertNode(struct machineCode* head, const char* symbol, int num);
 void insertTheString(struct machineCode* head,char line[]);
 void printTheString(struct machineCode* head,const char* token,char* symbol);
 void insertnodeString(struct machineCode* head ,const char* symbol,char ch);
+int checkBothRegOrNot(char line[]);
 void argFuntion(char line[],int index, struct machineCode* head,char functionName[]);
 #endif

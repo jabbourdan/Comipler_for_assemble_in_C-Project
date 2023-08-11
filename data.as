@@ -1,12 +1,11 @@
 .entry asdas , v32
+str: mov asd dasd
+    .extern a1,a2
     A2A21: not mjnlkj
 m2: not ljhlj
 v3: not 1asdasd
     .string "adasda"
 MAIN: add asdad adasd
-
-
-    MAIN2356: .string  "asdasdda"
 
 mcro m1
      ADASDADASDASDASD AS DAS DA DSA
@@ -27,7 +26,7 @@ bne LOOP
 m1
 
 bne LOOP
-END: stop
+asdas: stop
 STR: .string "abcdef"
 LENGTH: .data 6,-9,15
 a: .data 22

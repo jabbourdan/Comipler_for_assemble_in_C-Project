@@ -68,13 +68,8 @@ int check_length_lines(char* filename) {
     int length_line = 0;
 
     // Open the file in read mode
-    file = fopen(filename, "r");
+    file = open_file(filename, "r");
 
-    // Check if the file was opened successfully
-    if (file == NULL) {
-        printf("Unable to open the file.\n");
-        return -1;
-    }
 
     // Read each line of the file
     while (fgets(line, sizeof(line), file)) {

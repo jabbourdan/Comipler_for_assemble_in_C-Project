@@ -203,9 +203,17 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
             }
         }else if(extryOrExtery(line) == 2){ //entry
             if(validEntry(line)){
-                putTheEntryIn(dataHead,line,flagData);
+                putTheEntryIn(dataHead,line,flagData,"entry");
                 flagData=0;
                 dataTB=0;
+            }
+        }else if(extryOrExtery(line) == 1){//extern
+            putTheEntryIn(dataHead,line,flagData,"extern");
+            flagData=0;
+            dataTB=0;
+        }else if(extryOrExtery(line) == 0){//if not entry or extern (if it's a regular function like move ...)
+            while(isspace(line[ind])){
+                ind++;
             }
         }
         if (flagData&&dataTB) {
