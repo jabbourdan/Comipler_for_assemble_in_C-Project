@@ -49,7 +49,7 @@ void secondCheck(char* fileName,struct  dataTable* dataTail, struct  machineCode
                 if(var==-1){
                 continue;
                 }
-                updateTheMachineOfTheFunction(line,index,machineTail,position);
+                updateTheMachineOfTheFunction(dataTail,machineTail,line,index,position);
         }
         position++;
         free(temp);

@@ -1,4 +1,5 @@
 #ifndef DATATABLE_H
+#define DATATABLE_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,4 +16,5 @@ struct dataTable  {
 void putTheEntryOrExternIn(struct dataTable * temp,char line[],int flag,const char * type,int index);
 int notExistSymbol(struct dataTable *dataTable, char sname[]);
 int theSymboleIsEntryOrExtern(struct dataTable *dataTable, char sname[]);
+char* extractTheAdressOfSymbol(struct dataTable* head,char* symbol);
 #endif

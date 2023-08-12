@@ -118,7 +118,7 @@ int opCode(char line[], int index, struct machineCode *machineCode) /* Return th
         printf("The line %s \nTakes wrong Number of args \n ",line);
         return -1;
     }
-    machineCodeFunction(machineCode, opName,line,index);
+    machineCodeFunction(machineCode, opName, line);
     argFuntion(line,index,machineCode, opName);
     return index;
 }
@@ -157,7 +157,6 @@ int numOfArg(struct  machineCode* machineCode,char line[]){
         return 1;
     else
         return 0;
-
 }
 
 int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *machineHead, int *IC, int *DC) {
@@ -304,8 +303,6 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
 
     }
     fclose(file);
-    tailMachine = (struct machineCode *) malloc(sizeof(struct machineCode));
-    machineHead->next = tailMachine;
     *IC = tempIC;
     *DC = tempDC;
     return 0;

@@ -43,7 +43,7 @@ const char* funcBits(char op[]) /*Returns the opcode type in decimal base*/
         strcpy(new, "-1");
     return new;
 }
-void machineCodeFunction(struct machineCode* head,char function[],char line[],int index){
+void machineCodeFunction(struct machineCode *head, char function[], char line[]) {
     const char *binaryFunction = funcBits(function);
     if(binaryFunction==NULL){
         printf("Error: Memory allocation failed in funcBits \n");
@@ -61,22 +61,28 @@ void machineCodeFunction(struct machineCode* head,char function[],char line[],in
     //free(binaryFunction);
 }
 char* changeBinary(int number, int bits) {
-    static char binaryString[13]; // Fixed-size array to store the binary representation (12 bits + 1 null-terminator)
+    // Calculate the minimum buffer size needed for the binary representation
+    int bufferSize = bits + 1; // bits + 1 for the null-terminator
+
+    // Allocate memory for the binary string dynamically
+    char *binaryString = (char *)malloc(bufferSize * sizeof(char));
+
+    if (binaryString == NULL) {
+        // Memory allocation failed, handle the error here
+        return NULL;
+    }
 
     int i;
-    // Check if the number is negative
     if (number < 0) {
-        // Calculate the two's complement representation
         number = (1 << bits) + number;
     }
 
-    // Build the binary representation in the character array
     for (i = bits - 1; i >= 0; i--) {
         int bit = (number >> i) & 1;
-        binaryString[bits - 1 - i] = bit + '0'; // Convert integer bit to character '0' or '1'
+        binaryString[bits - 1 - i] = (char)(bit + '0');
     }
 
-    binaryString[bits] = '\0'; // Null-terminate the string
+    binaryString[bits] = '\0';
 
     return binaryString;
 }
@@ -239,7 +245,7 @@ void printTheString(struct machineCode* head,const char* token,char* symbol){
     }
 }
 
-int checkBothRegOrNot(char line[]){
+int checkBothRegOrNot(const char line[]){
     int thereIsTwoArgs = 0,index =0;// 0 = no args 1 one arg ,2 two args
     while (line[index] != '\0'){
         if(line[index] == '@' && thereIsTwoArgs == 0){
@@ -256,7 +262,7 @@ int checkBothRegOrNot(char line[]){
     return thereIsTwoArgs;
 }
 
-void argFuntion(char line[],int index, struct machineCode* head,char functionName[]){
+void argFuntion(const char line[],int index, struct machineCode* head,char functionName[]){
 
     //printf("----%s----\n",functionName);
     if(strcmp(functionName, "lea") == 0){
@@ -284,49 +290,93 @@ void argFuntion(char line[],int index, struct machineCode* head,char functionNam
         }
     }
 }
+char* shiftBinary(char* binary, int positions, int direction) {//0 left 1 for right
+    unsigned long long length = strlen(binary);
+    char* shiftedBinary = NULL;
+    int i;
+    if (direction == 0) {
+        shiftedBinary = malloc(length + positions + 1); // +1 for the null terminator
+        strcpy(shiftedBinary, binary);
 
-void updateTheFunction(char ,char index,struct machineCode* head,int position){
-    struct machineCode* current = head;
-    int currentPosition = 0;
-    if (head == NULL) {
-        printf("List is empty.\n");
-        return;
-    }
-    while (current != NULL) {
-        if (currentPosition == position) {
-            strcpy(current->firstArg, "");
-            return;
+        for (i = 0; i < positions; i++) {
+            strcat(shiftedBinary, "0");
         }
-        current = current->next;
-        currentPosition++;
+    } else if (direction == 1) {
+        shiftedBinary = malloc(length + positions + 1);
+        for (i = 0; i < positions; i++) {
+            shiftedBinary[i] = '0';
+        }
+        strcpy(shiftedBinary + positions, binary);
     }
+
+    return shiftedBinary;
 }
-void updateMachineAtPosition(struct machineCode* head,int position,char* firstArg,char* secondArg){
+char* convertTheArgToBinary(struct dataTable* headTable,char* arg,int type,const char* secondArg){
+    int lastValue;
+    long int value;
+    unsigned long length = strlen(arg);
+    unsigned long lengthLastArg;
+    char lastArg;
+    char* binnary=NULL;
+    if(type==1){
+        value=strtol(arg, NULL, 10);
+        binnary = changeBinary((int)value,12);
+    }else if(type==3){
+        binnary= extractTheAdressOfSymbol(headTable,arg);
+    }else if(type==5&&secondArg==NULL){
+        lastArg = arg[length-1];
+        lastValue = lastArg - '0';
+        binnary = changeBinary(lastValue , 4);
+        binnary = shiftBinary(binnary, 2,0);
+        binnary = shiftBinary(binnary, 6,1);
+
+    }else if (type==5&&secondArg!=NULL){
+        lastArg = arg[length-1];
+        lastValue = lastArg - '0';
+        binnary = changeBinary(lastValue , 3);
+        binnary = shiftBinary(binnary, 9,0);
+    }
+    return binnary;
+}
+
+
+void updateMachineAtPosition(struct machineCode* head,struct dataTable* headData,int position,char* firstArg,char* secondArg){
     struct machineCode* current = head;
-    int currentPosition = 0;
+    int currentPosition = 0,typeFirsArg,typeSecondArg;
+    char* binaryFirstArg;
+    char* binarySecondArg;
+    typeFirsArg=retrunTheNumberOfThetypeOfThearg(firstArg);
+    typeSecondArg=retrunTheNumberOfThetypeOfThearg(secondArg);
     if (head == NULL) {
         printf("List is empty.\n");
         return;
     }
     while (current != NULL) {
         if (currentPosition == position) {
-            if(firstArg!=NULL){
+            if(typeFirsArg==5 && typeSecondArg==5){
+
+            }else
+                if(firstArg!=NULL){
                 strcpy(current->firstArg , firstArg);
-            }
-            if(secondArg!=NULL){
-                strcpy(current->secondArg , secondArg);
-            }
+                binaryFirstArg = convertTheArgToBinary(headData,firstArg,typeFirsArg,secondArg);
+                //strcpy(current->firstArgAddress , binaryFirstArg);
+
+                if(secondArg!=NULL){
+                    strcpy(current->secondArg , secondArg);
+                    binarySecondArg = convertTheArgToBinary(headData,secondArg,typeSecondArg,NULL);
+                    //strcpy(current->secondArgAddress , binarySecondArg);
+                    }
+                }
             return;
         }
         current = current->next;
         currentPosition++;
     }
-
 }
-void updateTheMachineOfTheFunction(char line[],int index,struct machineCode* head,int position){
+void updateTheMachineOfTheFunction(struct dataTable* headTable,struct machineCode* head,char line[],int index,int position){
     char symbol[MAX_SYMBOL_LENGTH];
     char sAddress[MAX_BITES],dAddress[MAX_BITES];
-    int sIndex=0,dIndex=0,syIndex=0;
+    int syIndex=0,typeFirsArg,typeSecondArg;
     char* firstArg,*secondArg;
     while(isspace(line[index])){
         index++;
@@ -338,8 +388,9 @@ void updateTheMachineOfTheFunction(char line[],int index,struct machineCode* hea
     }
     firstArg= returnSource(line,index);
     secondArg= returnDest(line,index);
+
     if(validArgsFun(symbol,firstArg,secondArg)){
-        updateMachineAtPosition(head,position,firstArg,secondArg);
+        updateMachineAtPosition(head,headTable,position,firstArg,secondArg);
         return;
     }
 }

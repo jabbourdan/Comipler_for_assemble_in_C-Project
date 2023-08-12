@@ -4,7 +4,7 @@
 #include <string.h>
 #include "globals.h"
 #include "validSyntax.h"
-
+#include "dataTable.h"
 struct machineCode {
     char symbol[31];
     char opcode [MAX_BITES];
@@ -19,7 +19,7 @@ struct machineCode {
     struct machineCode* next;
 };
 
-void machineCodeFunction(struct machineCode* head,char function[],char line[],int index);
+void machineCodeFunction(struct machineCode *head, char function[], char line[]);
 const char* funcBits(char op[]);
 void insserTheNumbers(struct machineCode* head,char line[]);
 char* changeBinary(int number,int bits);
@@ -28,7 +28,7 @@ void insertNode(struct machineCode* head, const char* symbol, int num);
 void insertTheString(struct machineCode* head,char line[]);
 void printTheString(struct machineCode* head,const char* token,char* symbol);
 void insertnodeString(struct machineCode* head ,const char* symbol,char ch);
-int checkBothRegOrNot(char line[]);
-void argFuntion(char line[],int index, struct machineCode* head,char functionName[]);
-void updateTheMachineOfTheFunction(char line[],int index,struct machineCode* head,int position);
+int checkBothRegOrNot(const char line[]);
+void argFuntion(const char line[],int index, struct machineCode* head,char functionName[]);
+void updateTheMachineOfTheFunction(struct dataTable* headTable,struct machineCode* head,char line[],int index,int position);
 #endif

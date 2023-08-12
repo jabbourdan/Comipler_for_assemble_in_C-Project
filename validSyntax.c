@@ -102,7 +102,7 @@ int validateDataSyntax(char line[],int index) {
 }
 
 int validString(char line[],int index){
-    int quat=0,first=0;
+    int quat=0;
     index = returnIndexTheData(line,index);
     while(isspace(line[index])){
         index++;
@@ -134,6 +134,9 @@ char* returnSource(char line[],int index) {
         index++;
     }
     while (line[index] != '\0'&&!isspace(line[index])) {
+        if(line[index] == ','){
+            break;
+        }
         sourceArg[sourceIndex] = line[index];
         sourceIndex++;
         index++;
@@ -148,16 +151,21 @@ char* returnSource(char line[],int index) {
 char* returnDest(char line[],int index) {
     char *desArg = (char *) malloc(MAX_LINE_LENGTH * sizeof(char));
     int desIndex = 0;
-    while (isspace(line[index]) == 0) {
-        index++;
+    if(line[index] == '\n'){
+        return NULL;
     }
-    while (line[index] != '\0' ) {
-        index++;
-        if(line[index]== ' '){
+    while(isspace(line[index]))index++;
+    while(!isspace(line[index])){
+        if(line[index] == ','){
+            index++;
             break;
         }
+        index++;
     }
-    while (line[index] != '\0' || isspace(line[index])) {
+    while (isspace(line[index]) || line[index] ==',') {
+        index++;
+    }
+    while (line[index] != '\0'&&!isspace(line[index])) {
         desArg[desIndex] = line[index];
         desIndex++;
         index++;
@@ -165,7 +173,7 @@ char* returnDest(char line[],int index) {
     if(desIndex==0){
         return NULL;
     }
-    desArg[desIndex-1] = '\0';
+    desArg[desIndex] = '\0';
     return desArg;
 }
 
@@ -195,7 +203,7 @@ int retrunTheNumberOfThetypeOfThearg(char* arg){
     int index = 0;
     if(arg==NULL)return 0;
     while(isspace(arg[index]) || arg[index] == ',')index++;
-    if(!strcmp(arg,"@r1") || !strcmp(arg,"@r2") || !strcmp(arg,"@r3") || !strcmp(arg,"@r4") ||!strcmp(arg,"@r5") || !strcmp(arg,"@r6") || !strcmp(arg,"@r7")){
+    if(!strcmp(arg,"@r0") || !strcmp(arg,"@r1") || !strcmp(arg,"@r2") || !strcmp(arg,"@r3") || !strcmp(arg,"@r4") ||!strcmp(arg,"@r5") || !strcmp(arg,"@r6") || !strcmp(arg,"@r7")){
         return 5;
     }else if(arg[index] == '-' || isdigit(arg[index])){
         while(arg[index] != '\0'){

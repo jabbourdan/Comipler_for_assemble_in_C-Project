@@ -7,7 +7,10 @@ int notExistSymbol(struct dataTable *dataTable, char sname[]) /*Checks if the sy
     while (tailf != NULL)  /*Run on all the symbols we have already found*/
     {
         if (!strcmp(tailf->symbol, sname)) {
-            return 0;
+            if(!strcmp(tailf->symbol, "extern")){
+                printf("The symbol %s is external and apear in the file",sname);
+                return 0;
+            }
         }
         tailf = tailf->next;
     }
@@ -29,7 +32,18 @@ int theSymboleIsEntryOrExtern(struct dataTable *dataTable, char sname[]){
     }
     return 0;
 }
-
+char* extractTheAdressOfSymbol(struct dataTable* head,char* symbol){
+    char* adress=NULL;
+    struct dataTable* current = head;
+    while (current != NULL) {
+        if (strcmp(current->symbol, symbol) == 0) {
+            printf("Symbol found: %s, Address: %d\n", current->symbol, current->adress);
+            break; // Stop the loop once the symbol is found
+        }
+        current = current->next;
+    }
+    return adress;
+}
 void putTheEntryOrExternIn(struct dataTable* dataHead, char line[],int flag,const char * type,int index) {
     int tokenLength;
     char *substring;

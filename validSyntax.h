@@ -15,4 +15,5 @@ int validEntry(char line[]);
 char* returnDest(char line[],int index);
 char* returnSource(char line[],int index);
 int validArgsFun(char functionName[],char* firsArg,char* secondArg);
+int retrunTheNumberOfThetypeOfThearg(char* arg);
 #endif // VALIDSYNTAX_H

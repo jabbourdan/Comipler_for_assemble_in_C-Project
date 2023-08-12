@@ -1,5 +1,8 @@
-MAIN: mov @r3 ,asd
-V2: jsr asdasd
+.entry LENGTH
+MAIN: cmp  LENGTH,60
+LENGTH: .data 6,-9,15
+
+    V2: jsr asdasd
     .extern W
     .string "abcdef"
 LOOP: jmp L1
@@ -11,5 +14,4 @@ L1: inc K
 bne LOOP
 END: stop
 
-LENGTH: .data 6,-9,15
 K: .data 22
