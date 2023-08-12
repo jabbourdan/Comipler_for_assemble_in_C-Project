@@ -1,4 +1,5 @@
 #ifndef MACHINECODE_H
+#define MACHINECODE_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,5 +31,5 @@ void printTheString(struct machineCode* head,const char* token,char* symbol);
 void insertnodeString(struct machineCode* head ,const char* symbol,char ch);
 int checkBothRegOrNot(const char line[]);
 void argFuntion(const char line[],int index, struct machineCode* head,char functionName[]);
-void updateTheMachineOfTheFunction(struct dataTable* headTable,struct machineCode* head,char line[],int index,int position);
+void updateTheMachineOfTheFunction(struct dataTable* headTable,struct machineCode* head,char line[]);
 #endif

@@ -5,8 +5,7 @@ void secondCheck(char* fileName,struct  dataTable* dataTail, struct  machineCode
     printf("----second step-------\n");
     printf("----------------------\n");
     char line[MAX_LINE_LENGTH];
-    int index, sindex = 0,position=0,var;
-    char sname[MAX_SYMBOL_LENGTH];
+    int index, sindex = 0,var;
     char fileNameAM[MAX_LINE_LENGTH];
     char fileNameOb[MAX_LINE_LENGTH];
     char fileNameEntry[MAX_LINE_LENGTH];
@@ -28,11 +27,9 @@ void secondCheck(char* fileName,struct  dataTable* dataTail, struct  machineCode
     {
         struct machineCode *machineTemp = NULL;
         struct dataTable *temp = NULL;
-        struct dataTable *temp1 = NULL;
         index=0;
         machineTemp = (struct machineCode *) malloc(sizeof(struct machineCode));
         temp = (struct dataTable *) malloc(sizeof(struct dataTable));
-        temp1 = (struct dataTable *) malloc(sizeof(struct dataTable));
 
         if(isSymbol(line, temp , dataTail,2)){
             //changeTheApearInDataTable();
@@ -49,10 +46,10 @@ void secondCheck(char* fileName,struct  dataTable* dataTail, struct  machineCode
                 if(var==-1){
                 continue;
                 }
-                updateTheMachineOfTheFunction(dataTail,machineTail,line,index,position);
+                updateTheMachineOfTheFunction(dataTail,machineTail,line);
         }
-        position++;
         free(temp);
         free(machineTemp);
     }
+    printf("END");
 }

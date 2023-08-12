@@ -340,9 +340,9 @@ char* convertTheArgToBinary(struct dataTable* headTable,char* arg,int type,const
 }
 
 
-void updateMachineAtPosition(struct machineCode* head,struct dataTable* headData,int position,char* firstArg,char* secondArg){
+void updateMachineAtPosition(struct machineCode* head,struct dataTable* headData,char* firstArg,char* secondArg,char* symbol){
     struct machineCode* current = head;
-    int currentPosition = 0,typeFirsArg,typeSecondArg;
+    int typeFirsArg,typeSecondArg;
     char* binaryFirstArg;
     char* binarySecondArg;
     typeFirsArg=retrunTheNumberOfThetypeOfThearg(firstArg);
@@ -352,45 +352,59 @@ void updateMachineAtPosition(struct machineCode* head,struct dataTable* headData
         return;
     }
     while (current != NULL) {
-        if (currentPosition == position) {
+        if (!strcmp(current->symbol,symbol)) {
             if(typeFirsArg==5 && typeSecondArg==5){
 
             }else
                 if(firstArg!=NULL){
                 strcpy(current->firstArg , firstArg);
                 binaryFirstArg = convertTheArgToBinary(headData,firstArg,typeFirsArg,secondArg);
-                //strcpy(current->firstArgAddress , binaryFirstArg);
+                if(binaryFirstArg!=NULL){
+                    strcpy(current->firstArgAddress , binaryFirstArg);
+                }
 
                 if(secondArg!=NULL){
                     strcpy(current->secondArg , secondArg);
                     binarySecondArg = convertTheArgToBinary(headData,secondArg,typeSecondArg,NULL);
-                    //strcpy(current->secondArgAddress , binarySecondArg);
+                    if(binarySecondArg!=NULL){
+                        strcpy(current->secondArgAddress , binarySecondArg);
+                        }
                     }
                 }
             return;
         }
         current = current->next;
-        currentPosition++;
     }
 }
-void updateTheMachineOfTheFunction(struct dataTable* headTable,struct machineCode* head,char line[],int index,int position){
-    char symbol[MAX_SYMBOL_LENGTH];
+void updateTheMachineOfTheFunction(struct dataTable* headTable,struct machineCode* head,char line[]){
+    char* symbol =(char *)malloc(MAX_SYMBOL_LENGTH);;
     char sAddress[MAX_BITES],dAddress[MAX_BITES];
-    int syIndex=0,typeFirsArg,typeSecondArg;
+    int syIndex=0,typeFirsArg,typeSecondArg,index=0;
     char* firstArg,*secondArg;
     while(isspace(line[index])){
         index++;
     }
     while(!isspace(line[index])){
+        if(line[index] == ':'){
+            symbol[syIndex] = '\0';
+            index++;
+            break;
+        }
         symbol[syIndex] = line[index];
         index++;
         syIndex++;
+    }
+    while(isspace(line[index])){
+        index++;
+    }
+    while(!isspace(line[index])){
+        index++;
     }
     firstArg= returnSource(line,index);
     secondArg= returnDest(line,index);
 
     if(validArgsFun(symbol,firstArg,secondArg)){
-        updateMachineAtPosition(head,headTable,position,firstArg,secondArg);
+        updateMachineAtPosition(head,headTable,firstArg,secondArg,symbol);
         return;
     }
 }

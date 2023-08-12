@@ -1,8 +1,6 @@
-.entry LENGTH
+
 MAIN: cmp  LENGTH,60
 LENGTH: .data 6,-9,15
-
-    V2: jsr asdasd
     .extern W
     .string "abcdef"
 LOOP: jmp L1

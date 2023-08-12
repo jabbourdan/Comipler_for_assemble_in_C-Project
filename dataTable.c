@@ -7,10 +7,11 @@ int notExistSymbol(struct dataTable *dataTable, char sname[]) /*Checks if the sy
     while (tailf != NULL)  /*Run on all the symbols we have already found*/
     {
         if (!strcmp(tailf->symbol, sname)) {
-            if(!strcmp(tailf->symbol, "extern")){
-                printf("The symbol %s is external and apear in the file",sname);
-                return 0;
+            if(strcmp(tailf->type, "entry") ==0){
+                tailf = tailf->next;
+                continue;
             }
+            return 0;
         }
         tailf = tailf->next;
     }
@@ -37,7 +38,14 @@ char* extractTheAdressOfSymbol(struct dataTable* head,char* symbol){
     struct dataTable* current = head;
     while (current != NULL) {
         if (strcmp(current->symbol, symbol) == 0) {
-            printf("Symbol found: %s, Address: %d\n", current->symbol, current->adress);
+            if(strcmp(current->type, "entry") == 0){
+                current = current->next;
+                continue;
+            }else if(strcmp(current->type, "extern") == 0){
+                strcpy(adress,"000000000010");
+                break;
+            }
+            adress=changeBinary(current->adress,12);
             break; // Stop the loop once the symbol is found
         }
         current = current->next;
