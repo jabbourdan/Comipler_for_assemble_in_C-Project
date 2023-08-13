@@ -7,7 +7,7 @@
 #include "globals.h"
 #include "machineCode.h"
 struct dataTable  {
-    char symbol [MAX_LINE_LENGTH];
+    char symbol [MAX_SYMBOL_LENGTH];
     int numberOfValues;
     int adress;
     int appear;
@@ -18,4 +18,6 @@ void putTheEntryOrExternIn(struct dataTable * temp,char line[],int flag,const ch
 int notExistSymbol(struct dataTable *dataTable, char sname[]);
 int theSymboleIsEntryOrExtern(struct dataTable *dataTable, char sname[]);
 char* extractTheAdressOfSymbol(struct dataTable* head,char* symbol);
+void checkTheExtern(struct dataTable* head,char line[],int index);
+int checkTheEntry(struct dataTable *head, char line[],int index);
 #endif

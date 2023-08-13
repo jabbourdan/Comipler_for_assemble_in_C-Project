@@ -27,29 +27,41 @@ void secondCheck(char* fileName,struct  dataTable* dataTail, struct  machineCode
     {
         struct machineCode *machineTemp = NULL;
         struct dataTable *temp = NULL;
-        index=0;
+        index = 0;
         machineTemp = (struct machineCode *) malloc(sizeof(struct machineCode));
         temp = (struct dataTable *) malloc(sizeof(struct dataTable));
 
-        if(isSymbol(line, temp , dataTail,2)){
-            //changeTheApearInDataTable();
+        if (isSymbol(line, temp, dataTail, 2)) {
             while (isspace(line[index]))
                 index++;
             while (!isspace(line[index]))
                 index++;
-            if (stringOrData(line, index)){
+            if (stringOrData(line, index)) {
                 continue;
-            }else if(extryOrExtery(line,index)) {
-                //printf("Its entry or extern\n%s",line);
-                continue;
-            }else var = opCode(line, index, machineTemp);
-                if(var==-1){
-                continue;
+            } else if (extryOrExtery(line, index)) {
+                if (extryOrExtery(line, index) == 1) {//extern
+                    checkTheExtern(dataTail, line, index);
+                } else if (extryOrExtery(line, index) == 2) {
+                    checkTheEntry(dataTail, line, index);
                 }
-                updateTheMachineOfTheFunction(dataTail,machineTail,line);
+                //printf("Its entry or extern\n%s",line);
+            } else var = opCode(line, index, machineTemp);
+            if (var == -1) {
+                continue;
+            }
+            updateTheMachineOfTheFunction(dataTail, machineTail, line);
+        } else if (extryOrExtery(line, index)) {
+            if (extryOrExtery(line, index) == 1) {//extern
+                checkTheExtern(dataTail, line, 0);
+            } else if (extryOrExtery(line, index) == 2) {
+                checkTheEntry(dataTail, line, 0);
+            }
+            free(temp);
+            free(machineTemp);
+        }else if(stringOrData(line,index)){
+            continue;
         }
-        free(temp);
-        free(machineTemp);
+
     }
     printf("END");
 }

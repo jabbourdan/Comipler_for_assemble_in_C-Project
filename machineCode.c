@@ -377,7 +377,7 @@ void updateMachineAtPosition(struct machineCode* head,struct dataTable* headData
     }
 }
 void updateTheMachineOfTheFunction(struct dataTable* headTable,struct machineCode* head,char line[]){
-    char* symbol =(char *)malloc(MAX_SYMBOL_LENGTH);;
+    char* symbol =(char *)malloc(MAX_SYMBOL_LENGTH);
     char sAddress[MAX_BITES],dAddress[MAX_BITES];
     int syIndex=0,typeFirsArg,typeSecondArg,index=0;
     char* firstArg,*secondArg;

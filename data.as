@@ -1,6 +1,5 @@
-
-MAIN: cmp  LENGTH,60
-LENGTH: .data 6,-9,15
+.data -9
+.entry LOOP,LENGTH
     .extern W
     .string "abcdef"
 LOOP: jmp L1

@@ -10,6 +10,10 @@ int notExistSymbol(struct dataTable *dataTable, char sname[]) /*Checks if the sy
             if(strcmp(tailf->type, "entry") ==0){
                 tailf = tailf->next;
                 continue;
+            }if(strcmp(tailf->type, "extern") ==0) {
+                tailf = tailf->next;
+                printf("This Symbol %s is extern and is exist on the file as symbol",sname);
+                continue;
             }
             return 0;
         }
@@ -19,20 +23,89 @@ int notExistSymbol(struct dataTable *dataTable, char sname[]) /*Checks if the sy
 
     return 1;
 }
+int checkTheEntry(struct dataTable *head, char line[],int index){
+    struct dataTable *current ;
+    char* symbols = (char *) malloc(MAX_SYMBOL_LENGTH);
+    int  syIndex = 0,apear=0;
 
-int theSymboleIsEntryOrExtern(struct dataTable *dataTable, char sname[]){
-    struct dataTable* current = dataTable;
-    while (current != NULL && !strcmp(current->symbol, sname)) {
-        current = current->next;
+    while (isspace(line[index])) {
+        index++;
     }
-    if (current != NULL) {
-        current->appear = 1;
-        return 1;
-    } else {
-        printf("Node with target data not found.\n");
+    while(!isspace(line[index])) {
+        index++;
     }
-    return 0;
+    while(line[index]!='\0') {
+        memset(symbols,'\0',31);
+        apear=0;
+        syIndex=0;
+        current=head;
+        while(isspace(line[index]))index++;
+        while (line[index]!='\0') {
+            if (line[index] == ',' || isspace(line[index])) {
+                index++;
+                break;
+            }
+            symbols[syIndex] = line[index];
+            index++;
+            syIndex++;
+        }
+        while (current != NULL) {
+            if (strcmp(current->symbol, symbols) == 0) {
+                if (strcmp(current->type, "entry")) {
+                    //printf("This Symbol %s is entry and is exist on the file as symbol.\n", symbols);
+                    apear=1;
+                }
+                // Stop the loop once the symbol is found
+            }
+            current = current->next;
+        }
+        if(apear==0){
+            printf("The entry symbole %s don't exist as a symbol in the file\n",symbols);
+        }
+
+    }
+
+    free(symbols);
+    return apear;
 }
+void checkTheExtern(struct dataTable *head, char line[],int index) {
+    struct dataTable *current ;
+    char* symbols = (char *) malloc(MAX_SYMBOL_LENGTH);
+    int  syIndex = 0;
+
+    while (isspace(line[index])) {
+        index++;
+    }
+    while(!isspace(line[index])) {
+        index++;
+    }
+    while(line[index]!='\0') {
+        memset(symbols,'\0',31);
+        syIndex=0;
+        current=head;
+        while(isspace(line[index]))index++;
+        while (line[index]!='\0') {
+            if (line[index] == ',' || isspace(line[index])) {
+                index++;
+                break;
+            }
+            symbols[syIndex] = line[index];
+            index++;
+            syIndex++;
+        }
+        while (current != NULL) {
+            if (strcmp(current->symbol, symbols) == 0) {
+                if (strcmp(current->type, "extern")) {
+                    printf("This Symbol %s is extern and is exist on the file as symbol.\n", symbols);
+                }
+                // Stop the loop once the symbol is found
+            }
+            current = current->next;
+        }
+    }
+    free(symbols);
+}
+
 char* extractTheAdressOfSymbol(struct dataTable* head,char* symbol){
     char* adress=NULL;
     struct dataTable* current = head;
@@ -86,6 +159,12 @@ void putTheEntryOrExternIn(struct dataTable* dataHead, char line[],int flag,cons
             // Remove the last character by setting it to \0
             token[tokenLength - 1] = '\0';
         }
+
+        if(!strcmp(token,".extern") || !strcmp(token,".entry")){
+            token = strtok(NULL, " ,");
+            continue;
+        }
+
         strcpy(temp1->symbol ,token);
         strcpy(temp1->type,type);
         if(flag){
