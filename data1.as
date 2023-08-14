@@ -1,5 +1,5 @@
 V2: .entry LENGTH
-    .extern W
+.extern W
     .string "abcdef"
 MAIN: mov @r3 ,LENGTH
 LOOP: jmp L1

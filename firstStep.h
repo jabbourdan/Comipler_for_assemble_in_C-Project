@@ -19,4 +19,5 @@ int dataArg(char line[] , int index);
 int opCode(char line[], int ind ,struct  machineCode* machineCode);
 int extryOrExtery(char line[],int index);
 int numOfArg(struct  machineCode* machineCode,char line[]);
+int is_newline_or_spaces(const char *line);
 #endif

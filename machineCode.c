@@ -55,10 +55,12 @@ void machineCodeFunction(struct machineCode *head, char function[], char line[])
     }
     if(binaryFunction !=NULL || binaryFunction != 0){
         strcpy(head->opcode,"000000000000");
-        strcpy(head->funct, binaryFunction);
+        strcpy(head->funct, function);
+        strcpy(head->functAdress, binaryFunction);
     }
-    strcpy(head->funct, binaryFunction);
-    //free(binaryFunction);
+    strcpy(head->funct, function);
+    strcpy(head->functAdress, binaryFunction);
+    free(binaryFunction);
 }
 char* changeBinary(int number, int bits) {
     // Calculate the minimum buffer size needed for the binary representation
@@ -312,6 +314,7 @@ char* shiftBinary(char* binary, int positions, int direction) {//0 left 1 for ri
     return shiftedBinary;
 }
 char* convertTheArgToBinary(struct dataTable* headTable,char* arg,int type,const char* secondArg){
+    struct dataTable* temp=headTable;
     int lastValue;
     long int value;
     unsigned long length = strlen(arg);
@@ -340,7 +343,7 @@ char* convertTheArgToBinary(struct dataTable* headTable,char* arg,int type,const
 }
 
 
-void updateMachineAtPosition(struct machineCode* head,struct dataTable* headData,char* firstArg,char* secondArg,char* symbol){
+void updateMachineAtPosition(struct machineCode* head,struct dataTable* headData,char* firstArg,char* secondArg,char* funcName){
     struct machineCode* current = head;
     int typeFirsArg,typeSecondArg;
     char* binaryFirstArg;
@@ -352,11 +355,11 @@ void updateMachineAtPosition(struct machineCode* head,struct dataTable* headData
         return;
     }
     while (current != NULL) {
-        if (!strcmp(current->symbol,symbol)) {
+        if (!strcmp(current->funct,funcName)) {
             if(typeFirsArg==5 && typeSecondArg==5){
 
             }else
-                if(firstArg!=NULL){
+            if(firstArg!=NULL){
                 strcpy(current->firstArg , firstArg);
                 binaryFirstArg = convertTheArgToBinary(headData,firstArg,typeFirsArg,secondArg);
                 if(binaryFirstArg!=NULL){
@@ -368,43 +371,72 @@ void updateMachineAtPosition(struct machineCode* head,struct dataTable* headData
                     binarySecondArg = convertTheArgToBinary(headData,secondArg,typeSecondArg,NULL);
                     if(binarySecondArg!=NULL){
                         strcpy(current->secondArgAddress , binarySecondArg);
-                        }
                     }
                 }
-            return;
+                return;
+            }
+
         }
         current = current->next;
     }
 }
-void updateTheMachineOfTheFunction(struct dataTable* headTable,struct machineCode* head,char line[]){
-    char* symbol =(char *)malloc(MAX_SYMBOL_LENGTH);
-    char sAddress[MAX_BITES],dAddress[MAX_BITES];
-    int syIndex=0,typeFirsArg,typeSecondArg,index=0;
-    char* firstArg,*secondArg;
-    while(isspace(line[index])){
+void updateTheMachineOfTheFunction(struct dataTable* headTable, struct machineCode* head, char line[], int isSymbol) {
+    char* funcNameSymbol = (char*)malloc(MAX_SYMBOL_LENGTH);;
+    char* funcName = (char*)malloc(MAX_LINE_LENGTH);
+    int syIndex = 0, index = 0;
+    char* firstArg = NULL, * secondArg = NULL;
+
+    // Skip leading whitespace
+    while (isspace(line[index])) {
         index++;
     }
-    while(!isspace(line[index])){
-        if(line[index] == ':'){
-            symbol[syIndex] = '\0';
+
+    if (isSymbol) {
+        // Code for processing symbol
+        while(!isspace(line[index]))index++;
+        while(isspace(line[index]))index++;
+        while (!isspace(line[index])) {
+            if (line[index] == ':') {
+                funcName[syIndex] = '\0';
+                index++;
+                break;
+            }
+            funcName[syIndex] = line[index];
             index++;
+            syIndex++;
+        }
+        funcName[syIndex] = '\0';
+    }
+
+    while (isspace(line[index])) {
+        index++;
+    }
+
+    // Code for processing function name
+    while (!isspace(line[index]) && !isSymbol) {
+        if (line[index] == '\0') {
             break;
         }
-        symbol[syIndex] = line[index];
+        funcName[syIndex] = line[index];
         index++;
         syIndex++;
     }
-    while(isspace(line[index])){
-        index++;
-    }
-    while(!isspace(line[index])){
-        index++;
-    }
-    firstArg= returnSource(line,index);
-    secondArg= returnDest(line,index);
 
-    if(validArgsFun(symbol,firstArg,secondArg)){
-        updateMachineAtPosition(head,headTable,firstArg,secondArg,symbol);
-        return;
+    // Code for processing first and second arguments
+    firstArg = returnSource(line, index);
+    secondArg = returnDest(line, index);
+    if(funcNameSymbol!=NULL){
+        if (validArgsFun(funcNameSymbol, firstArg, secondArg)) {
+            updateMachineAtPosition(head, headTable, firstArg, secondArg, funcName);
+        }
+    }else if(validArgsFun(funcName, firstArg, secondArg)){
+        updateMachineAtPosition(head, headTable, firstArg, secondArg,funcName);
     }
+
+    // Free dynamically allocated memory
+    free(funcNameSymbol);
+    free(funcName);
+
+    // Free firstArg and secondArg if they are dynamically allocated
 }
+

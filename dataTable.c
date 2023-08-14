@@ -68,6 +68,7 @@ int checkTheEntry(struct dataTable *head, char line[],int index){
     free(symbols);
     return apear;
 }
+
 void checkTheExtern(struct dataTable *head, char line[],int index) {
     struct dataTable *current ;
     char* symbols = (char *) malloc(MAX_SYMBOL_LENGTH);
@@ -108,6 +109,7 @@ void checkTheExtern(struct dataTable *head, char line[],int index) {
 
 char* extractTheAdressOfSymbol(struct dataTable* head,char* symbol){
     char* adress=NULL;
+    char* finalAddress=NULL;
     struct dataTable* current = head;
     while (current != NULL) {
         if (strcmp(current->symbol, symbol) == 0) {
@@ -115,15 +117,22 @@ char* extractTheAdressOfSymbol(struct dataTable* head,char* symbol){
                 current = current->next;
                 continue;
             }else if(strcmp(current->type, "extern") == 0){
-                strcpy(adress,"000000000010");
-                break;
+                finalAddress = strdup("000000000001");
+                return finalAddress;
             }
-            adress=changeBinary(current->adress,12);
+            finalAddress = (char*)malloc(12);
+            if (finalAddress == NULL) {
+                printf("Memory allocation failed");
+                return 0;
+            }
+            adress=changeBinary(current->adress,10);
+            strcpy(finalAddress, adress);
+            strcat(finalAddress, "10");
             break; // Stop the loop once the symbol is found
         }
         current = current->next;
     }
-    return adress;
+    return finalAddress;
 }
 void putTheEntryOrExternIn(struct dataTable* dataHead, char line[],int flag,const char * type,int index) {
     int tokenLength;

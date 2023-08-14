@@ -206,6 +206,7 @@ int retrunTheNumberOfThetypeOfThearg(char* arg){
     if(!strcmp(arg,"@r0") || !strcmp(arg,"@r1") || !strcmp(arg,"@r2") || !strcmp(arg,"@r3") || !strcmp(arg,"@r4") ||!strcmp(arg,"@r5") || !strcmp(arg,"@r6") || !strcmp(arg,"@r7")){
         return 5;
     }else if(arg[index] == '-' || isdigit(arg[index])){
+        if(arg[index] == '-')index++;
         while(arg[index] != '\0'){
             if(!isdigit(arg[index])){
                 printf("The symbol is %s Take wrong type arg\n",arg);
@@ -221,24 +222,23 @@ int retrunTheNumberOfThetypeOfThearg(char* arg){
         return 0;
 }
 
-int validArgsFun(char symbol[],char* firstArg,char* secondArg){
+int validArgsFun(char funcNameSymbol[],char* firstArg,char* secondArg){
     int firstTpye=retrunTheNumberOfThetypeOfThearg(firstArg);
     int secondTpye=retrunTheNumberOfThetypeOfThearg(secondArg);
-    int valid1,valid2;
-    if(!strcmp(symbol, "mov") || !strcmp(symbol, "sub") || !strcmp(symbol, "add")){
+    if(!strcmp(funcNameSymbol, "mov") || !strcmp(funcNameSymbol, "sub") || !strcmp(funcNameSymbol, "add")){
         if(secondTpye==1){
-            printf("The symbol is %s Take wrong type arg\n",symbol);
+            printf("The symbol is %s Take wrong type arg\n",funcNameSymbol);
             return 0;
         }
-    }else if(!strcmp(symbol, "lea")){
+    }else if(!strcmp(funcNameSymbol, "lea")){
         if(firstTpye==1 || firstTpye==5 || secondTpye ==1){
-            printf("The symbol is %s Take wrong type arg\n",symbol);
+            printf("The symbol is %s Take wrong type arg\n",funcNameSymbol);
             return 0;
         }
-    }else if(!strcmp(symbol, "not") || !strcmp(symbol, "clr") || !strcmp(symbol, "inc") || !strcmp(symbol, "dec") ||
-            !strcmp(symbol, "jmp") || !strcmp(symbol, "bne") || !strcmp(symbol, "red") || !strcmp(symbol, "jsr")){
+    }else if(!strcmp(funcNameSymbol, "not") || !strcmp(funcNameSymbol, "clr") || !strcmp(funcNameSymbol, "inc") || !strcmp(funcNameSymbol, "dec") ||
+            !strcmp(funcNameSymbol, "jmp") || !strcmp(funcNameSymbol, "bne") || !strcmp(funcNameSymbol, "red") || !strcmp(funcNameSymbol, "jsr")){
         if(firstTpye==1){
-            printf("The symbol is %s Take wrong type arg\n",symbol);
+            printf("The symbol is %s Take wrong type arg\n",funcNameSymbol);
             return 0;
         }
     }
