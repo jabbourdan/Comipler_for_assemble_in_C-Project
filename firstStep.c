@@ -145,15 +145,15 @@ int extryOrExtery(char line[],int index){
     return 0;
 }
 int numOfArg(struct  machineCode* machineCode,char line[]){
-    if(!strcmp(machineCode->funct,"0000") || !strcmp(machineCode->funct,"0001") || !strcmp(machineCode->funct,"0110") || !strcmp(machineCode->funct,"0010") ||!strcmp(machineCode->funct,"0011"))
-        if(checkBothRegOrNot(line)==2 && strcmp(machineCode->funct,"0110")){ //not lea
+    if(!strcmp(machineCode->functAdress,"0000") || !strcmp(machineCode->functAdress,"0001") || !strcmp(machineCode->functAdress,"0110") || !strcmp(machineCode->functAdress,"0010") ||!strcmp(machineCode->funct,"0011"))
+        if(checkBothRegOrNot(line)==2 && strcmp(machineCode->functAdress,"0110")){ //not lea
             return 2;
         }else
             return 3;
-    else if(!strcmp(machineCode->funct,"0100") || !strcmp(machineCode->funct,"0101") || !strcmp(machineCode->funct,"0111") || !strcmp(machineCode->funct,"1000") || !strcmp(machineCode->funct,"1001") ||
-            !strcmp(machineCode->funct,"1010")||!strcmp(machineCode->funct,"1011") || !strcmp(machineCode->funct,"1101") || !strcmp(machineCode->funct,"1100"))
+    else if(!strcmp(machineCode->functAdress,"0100") || !strcmp(machineCode->functAdress,"0101") || !strcmp(machineCode->functAdress,"0111") || !strcmp(machineCode->functAdress,"1000") || !strcmp(machineCode->functAdress,"1001") ||
+            !strcmp(machineCode->functAdress,"1010")||!strcmp(machineCode->functAdress,"1011") || !strcmp(machineCode->functAdress,"1101") || !strcmp(machineCode->functAdress,"1100"))
         return 2;
-    else if(!strcmp(machineCode->funct,"1111") || !strcmp(machineCode->funct,"1110"))
+    else if(!strcmp(machineCode->functAdress,"1111") || !strcmp(machineCode->functAdress,"1110"))
         return 1;
     else
         return 0;

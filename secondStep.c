@@ -25,7 +25,7 @@ void secondCheck(char* fileName,struct dataTable* dataTail, struct  machineCode*
     printf("----second step-------\n");
     printf("----------------------\n");
     char line[MAX_LINE_LENGTH];
-    int index,var;
+    int index,var,value,tempIC;
     char fileNameAM[MAX_LINE_LENGTH];
     char fileNameOb[MAX_LINE_LENGTH];
     char fileNameEntry[MAX_LINE_LENGTH];
@@ -60,6 +60,8 @@ void secondCheck(char* fileName,struct dataTable* dataTail, struct  machineCode*
             while (!isspace(line[index]))
                 index++;
             if (stringOrData(line, index)) {
+                value = stringOrData(line, index);
+                tempIC = tempIC + value;
                 continue;
             } else if (extryOrExtery(line, index)) {
                 if (extryOrExtery(line, index) == 1) {//extern
@@ -71,7 +73,8 @@ void secondCheck(char* fileName,struct dataTable* dataTail, struct  machineCode*
             if (var == -1) {
                 continue;
             }
-            updateTheMachineOfTheFunction(dataTail, machineTail, line,1);
+            tempIC++;
+            updateTheMachineOfTheFunction(dataTail, machineTail, line,1,tempIC);
         }
         else if (extryOrExtery(line, index)) {
             if (extryOrExtery(line, index) == 1) {//extern
@@ -82,13 +85,16 @@ void secondCheck(char* fileName,struct dataTable* dataTail, struct  machineCode*
             free(temp);
             free(machineTemp);
         }else if(stringOrData(line,index)){
+            value = stringOrData(line, index);
+            tempIC = tempIC + value;
             continue;
         }else{
             var = opCode(line, index, machineTemp);
             if (var == -1) {
                 continue;
             }
-            updateTheMachineOfTheFunction(dataTail, machineTail, line, 0);
+            tempIC++;
+            updateTheMachineOfTheFunction(dataTail, machineTail, line, 0,tempIC);
         }
     }
     printf("END");

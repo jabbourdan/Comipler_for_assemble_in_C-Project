@@ -313,7 +313,7 @@ char* shiftBinary(char* binary, int positions, int direction) {//0 left 1 for ri
 
     return shiftedBinary;
 }
-char* convertTheArgToBinary(struct dataTable* headTable,char* arg,int type,const char* secondArg){
+char* convertTheArgToBinary(struct dataTable* headTable,char* arg,int type,const char* secondArg,int tempIC){
     struct dataTable* temp=headTable;
     int lastValue;
     long int value;
@@ -325,7 +325,7 @@ char* convertTheArgToBinary(struct dataTable* headTable,char* arg,int type,const
         value=strtol(arg, NULL, 10);
         binnary = changeBinary((int)value,12);
     }else if(type==3){
-        binnary= extractTheAdressOfSymbol(headTable,arg);
+        binnary= extractTheAdressOfSymbol(headTable,arg,tempIC);
     }else if(type==5&&secondArg==NULL){
         lastArg = arg[length-1];
         lastValue = lastArg - '0';
@@ -343,9 +343,9 @@ char* convertTheArgToBinary(struct dataTable* headTable,char* arg,int type,const
 }
 
 
-void updateMachineAtPosition(struct machineCode* head,struct dataTable* headData,char* firstArg,char* secondArg,char* funcName){
+void updateMachineAtPosition(struct machineCode* head,struct dataTable* headData,char* firstArg,char* secondArg,char* funcName,int tempIC){
     struct machineCode* current = head;
-    int typeFirsArg,typeSecondArg;
+    int typeFirsArg,typeSecondArg,count=1;
     char* binaryFirstArg;
     char* binarySecondArg;
     typeFirsArg=retrunTheNumberOfThetypeOfThearg(firstArg);
@@ -355,20 +355,20 @@ void updateMachineAtPosition(struct machineCode* head,struct dataTable* headData
         return;
     }
     while (current != NULL) {
-        if (!strcmp(current->funct,funcName)) {
+        if (!strcmp(current->funct,funcName) && count==tempIC) {
             if(typeFirsArg==5 && typeSecondArg==5){
 
             }else
             if(firstArg!=NULL){
                 strcpy(current->firstArg , firstArg);
-                binaryFirstArg = convertTheArgToBinary(headData,firstArg,typeFirsArg,secondArg);
+                binaryFirstArg = convertTheArgToBinary(headData,firstArg,typeFirsArg,secondArg,tempIC);
                 if(binaryFirstArg!=NULL){
                     strcpy(current->firstArgAddress , binaryFirstArg);
                 }
 
                 if(secondArg!=NULL){
                     strcpy(current->secondArg , secondArg);
-                    binarySecondArg = convertTheArgToBinary(headData,secondArg,typeSecondArg,NULL);
+                    binarySecondArg = convertTheArgToBinary(headData,secondArg,typeSecondArg,NULL,tempIC);
                     if(binarySecondArg!=NULL){
                         strcpy(current->secondArgAddress , binarySecondArg);
                     }
@@ -377,16 +377,15 @@ void updateMachineAtPosition(struct machineCode* head,struct dataTable* headData
             }
 
         }
+        count++;
         current = current->next;
     }
 }
-void updateTheMachineOfTheFunction(struct dataTable* headTable, struct machineCode* head, char line[], int isSymbol) {
+void updateTheMachineOfTheFunction(struct dataTable* headTable, struct machineCode* head, char line[], int isSymbol,int tempIC ) {
     char* funcNameSymbol = (char*)malloc(MAX_SYMBOL_LENGTH);;
     char* funcName = (char*)malloc(MAX_LINE_LENGTH);
     int syIndex = 0, index = 0,symbol=0;
     char* firstArg = NULL, * secondArg = NULL;
-
-    // Skip leading whitespace
     while (isspace(line[index])) {
         index++;
     }
@@ -399,12 +398,12 @@ void updateTheMachineOfTheFunction(struct dataTable* headTable, struct machineCo
             if (line[index] == ':') {
                 funcName[syIndex] = '\0';
                 index++;
-                symbol=1;
                 break;
             }
             funcName[syIndex] = line[index];
             index++;
             syIndex++;
+            symbol=1;
         }
     }
     funcName[syIndex] = '\0';
@@ -431,10 +430,10 @@ void updateTheMachineOfTheFunction(struct dataTable* headTable, struct machineCo
     secondArg = returnDest(line, index);
     if(funcNameSymbol!=NULL){
         if (validArgsFun(funcNameSymbol, firstArg, secondArg)) {
-            updateMachineAtPosition(head, headTable, firstArg, secondArg, funcName);
+            updateMachineAtPosition(head, headTable, firstArg, secondArg, funcName,tempIC);
         }
     }else if(validArgsFun(funcName, firstArg, secondArg)){
-        updateMachineAtPosition(head, headTable, firstArg, secondArg,funcName);
+        updateMachineAtPosition(head, headTable, firstArg, secondArg,funcName,tempIC);
     }
 
     // Free dynamically allocated memory

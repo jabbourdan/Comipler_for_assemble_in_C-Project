@@ -107,7 +107,7 @@ void checkTheExtern(struct dataTable *head, char line[],int index) {
     free(symbols);
 }
 
-char* extractTheAdressOfSymbol(struct dataTable* head,char* symbol){
+char* extractTheAdressOfSymbol(struct dataTable* head,char* symbol,int tempIC){
     char* adress=NULL;
     char* finalAddress=NULL;
     struct dataTable* current = head;
