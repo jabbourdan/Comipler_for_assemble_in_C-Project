@@ -1,17 +1,17 @@
- .string "abcdef"
-prn -5
-Data: jmp LENGTH
-.data -9,9
+LOOP: jmp L1
 .entry LENGTH
-.extern K2
+    .extern W
+MAIN: mov @r3 ,LENGTH
 
-
-LENGTH: .string "data"
-bne LOOP
+prn -5
+bne W
 sub @r1, @r4
-    bne END
+    bne L3
 L1: inc K
-bne LOOP
+    .entry LOOP
+jmp W
 END: stop
-W: .data 1,2
+STR: .string "abcdef"
+LENGTH: .data 6,-9,15
 K: .data 22
+    .extern L3

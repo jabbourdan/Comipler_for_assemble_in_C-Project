@@ -30,5 +30,5 @@ void printTheString(struct machineCode* head,const char* token,char* symbol);
 void insertnodeString(struct machineCode* head ,const char* symbol,char ch);
 int checkBothRegOrNot(const char line[]);
 void argFuntion(const char line[],int index, struct machineCode* head,char functionName[]);
-void updateTheMachineOfTheFunction(struct dataTable* headTable,struct machineCode* head,char line[],int isSymbol);
+void updateTheMachineOfTheFunction(struct dataTable* data,struct machineCode* head,char line[],int isSymbol);
 #endif

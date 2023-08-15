@@ -1,19 +1,22 @@
 #include "secondStep.h"
 void printAllMachineCodes(struct machineCode* head) {
     struct machineCode* current = head;
-    while (current != NULL) {
-        if (current == NULL) {
-            printf("Node is NULL\n");
-            return;
-        }
+    int i;
 
-        printf("Funcname: %s\n", current->symbol);
-        printf("Opcode: %s\n", current->opcode);
-        printf("Funct: %s\n", current->funct != NULL ? current->funct : ".");
-        printf("FunctAdress: %s\n", current->functAdress != NULL ? current->functAdress : ".");
-        printf("FirstArgAddress: %s\n", current->firstArgAddress != NULL ? current->firstArgAddress : ".");
-        printf("SecondArgAddress: %s\n", current->secondArgAddress != NULL ? current->secondArgAddress : ".");
-        printf("\n");;
+    while (current != NULL) {
+        printf("The Opcode: ");
+        for (i = 0; i < 12; i++) {
+            printf("%c", current->opcode[i]);
+        }
+        printf("\nThe First code: ");
+        for (i = 0; i < 12; i++) {
+            printf("%c", current->firstArgAddress[i]);
+        }
+        printf("\nThe second code: ");
+        for (i = 0; i < 12; i++) {
+            printf("%c", current->secondArgAddress[i]);
+        }
+        printf("\n");
         current = current->next;
     }
 }
@@ -22,7 +25,7 @@ void secondCheck(char* fileName,struct dataTable* dataTail, struct  machineCode*
     printf("----second step-------\n");
     printf("----------------------\n");
     char line[MAX_LINE_LENGTH];
-    int index, sindex = 0,var;
+    int index,var;
     char fileNameAM[MAX_LINE_LENGTH];
     char fileNameOb[MAX_LINE_LENGTH];
     char fileNameEntry[MAX_LINE_LENGTH];
@@ -69,7 +72,8 @@ void secondCheck(char* fileName,struct dataTable* dataTail, struct  machineCode*
                 continue;
             }
             updateTheMachineOfTheFunction(dataTail, machineTail, line,1);
-        } else if (extryOrExtery(line, index)) {
+        }
+        else if (extryOrExtery(line, index)) {
             if (extryOrExtery(line, index) == 1) {//extern
                 checkTheExtern(dataTail, line, 0);
             } else if (extryOrExtery(line, index) == 2) {
@@ -84,9 +88,8 @@ void secondCheck(char* fileName,struct dataTable* dataTail, struct  machineCode*
             if (var == -1) {
                 continue;
             }
-            updateTheMachineOfTheFunction(dataTail, machineTail, line,0);
+            updateTheMachineOfTheFunction(dataTail, machineTail, line, 0);
         }
-
     }
     printf("END");
     printAllMachineCodes(machineTail);

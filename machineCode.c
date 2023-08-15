@@ -336,8 +336,8 @@ char* convertTheArgToBinary(struct dataTable* headTable,char* arg,int type,const
     }else if (type==5&&secondArg!=NULL){
         lastArg = arg[length-1];
         lastValue = lastArg - '0';
-        binnary = changeBinary(lastValue , 3);
-        binnary = shiftBinary(binnary, 9,0);
+        binnary = changeBinary(lastValue , 5);
+        binnary = shiftBinary(binnary, 7,0);
     }
     return binnary;
 }
@@ -383,7 +383,7 @@ void updateMachineAtPosition(struct machineCode* head,struct dataTable* headData
 void updateTheMachineOfTheFunction(struct dataTable* headTable, struct machineCode* head, char line[], int isSymbol) {
     char* funcNameSymbol = (char*)malloc(MAX_SYMBOL_LENGTH);;
     char* funcName = (char*)malloc(MAX_LINE_LENGTH);
-    int syIndex = 0, index = 0;
+    int syIndex = 0, index = 0,symbol=0;
     char* firstArg = NULL, * secondArg = NULL;
 
     // Skip leading whitespace
@@ -399,15 +399,15 @@ void updateTheMachineOfTheFunction(struct dataTable* headTable, struct machineCo
             if (line[index] == ':') {
                 funcName[syIndex] = '\0';
                 index++;
+                symbol=1;
                 break;
             }
             funcName[syIndex] = line[index];
             index++;
             syIndex++;
         }
-        funcName[syIndex] = '\0';
     }
-
+    funcName[syIndex] = '\0';
     while (isspace(line[index])) {
         index++;
     }
@@ -415,13 +415,17 @@ void updateTheMachineOfTheFunction(struct dataTable* headTable, struct machineCo
     // Code for processing function name
     while (!isspace(line[index]) && !isSymbol) {
         if (line[index] == '\0') {
+            syIndex++;
             break;
         }
         funcName[syIndex] = line[index];
         index++;
         syIndex++;
     }
-
+    funcName[syIndex] =  '\0';
+    if(!symbol){
+        funcNameSymbol=NULL;
+    }
     // Code for processing first and second arguments
     firstArg = returnSource(line, index);
     secondArg = returnDest(line, index);
