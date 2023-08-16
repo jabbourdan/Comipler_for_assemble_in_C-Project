@@ -6,12 +6,12 @@
 #include "globals.h"
 #include <stdlib.h>
 #define MAX_SYMBOL_LENGTH 31
-int validSymbol(char line[], char sname[], int indexOfTheDots);
+int validSymbol(char line[], int indexOfTheDots);
 int validString(char line[],int index);
 int returnIndexTheData(char line[],int index);
 int validTakesArgs(char functionName[],char line[],int index);
 int validateDataSyntax(char line[],int index);
-int validEntry(char line[]);
+int validEntryAndExtern(char line[],int index);
 char* returnDest(char line[],int index);
 char* returnSource(char line[],int index);
 int validArgsFun(char functionName[],char* firsArg,char* secondArg);

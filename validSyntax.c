@@ -1,13 +1,12 @@
 #include "validSyntax.h"
 
-int validSymbol(char line[],char sname[],int indexOfTheDots) {
+int validSymbol(char line[],int indexOfTheDots) {
     int j=0;
 
     if(indexOfTheDots == 0 ){
         //printf("\nERROR : The line is : %s \n contain ':' without name\n",line);
         return -1;
     }
-
     while(isspace(line[j]))
         j++;
     if(isdigit(line[j])){
@@ -191,7 +190,7 @@ int validTakesArgs(char functionName[],char line[],int index){
             return 0;
         }
     }else if(strcmp(functionName, "rts") == 0 || strcmp(functionName, "stop") == 0){
-        if(firstArg!=NULL || firstArg!=NULL){
+        if(firstArg!=NULL || secondArg!=NULL){
             return 0;
         }
     }
@@ -218,7 +217,6 @@ int retrunTheNumberOfThetypeOfThearg(char* arg){
     }else if(isalpha(arg[index])){
         return 3;
     }else
-        printf("The symbol is %s Take wrong type arg\n",arg);
         return 0;
 }
 
@@ -246,37 +244,71 @@ int validArgsFun(char funcNameSymbol[],char* firstArg,char* secondArg){
 
 }
 
-int validEntry(char line[]) {
+int validEntryAndExtern(char line[],int index) {
     //valid entry no first number, betwen every 2 word should be comma
-    /*int index = 0, sindex = 0,startOfTheSymbol=0;
-    int entry = 0;
-    char sname[MAX_LINE_LENGTH];
-    memset(sname, '\0', MAX_LINE_LENGTH);
-    if (line[index] == '\n')
-        return 0;
-    while (isspace(line[index]))
-        index++;
-    while (line[index] != '\n') {
-        if (isspace(line[index]) || line[index] == ',')
-            break;
-        sname[sindex] = line[index];
-        sindex++;
-        index++;
-    }
-    while (isspace(line[index]))
-        index++;
-    printf("-----%s\n", sname);
-    while (line[index] != '\0') {
-
-        while(isspace(line[index])){
-            startOfTheSymbol=0;
-            index++;
+    int index1 = returnIndexTheData(line,index);
+    int num_flag = 0,comma=0;
+    int last_non_space_idx = 0,num=0;
+    int i = 0;
+    int index2=returnIndexTheData(line,index);
+    char *line1=line;
+    char *line2=line;
+    int last_comma = -2;
+    while (line[index1] != '\0') {
+        if (isspace(line[index1])) {
+            index1++;
+            continue;
         }
-        if(isdigit(line[index]) && startOfTheSymbol){
-            printf("This line %s\nThe symbol start with a number",line);
+        if(isdigit(line[index1])){
+            printf("This line %s\nHas Wrong format beging with num",line);
             return 0;
         }
+        if (num_flag &&  !isspace(line[index1]) && line[index1] != ','){
+            printf("This line %s\nHas Wrong format",line);
+            return 0;}
 
-    }*/
+        while (!isspace(line[index1]) && line[index1] != ',') {
+            num_flag = 1;
+            index1++;
+        }
+        if (line[index1] == ',') {
+            num_flag = 0;
+        };
+        index1++;
+    }
+
+    while (line1[index2] != '\0') {
+        if (isdigit(line1[index2]) || isalpha(line1[index2])) {
+            last_non_space_idx = i;
+            comma=0;
+        } else {
+            if (line[index2] == ',') {
+                if (last_comma > last_non_space_idx) {
+                    printf("This line %s\nHas Wrong format with comma\n",line);
+                    return 0;
+                }
+                last_comma = i;
+                comma=1;
+            }
+        }
+        index2++;
+        i++;
+    }
+    i= returnIndexTheData(line,index);
+    while(line2[i]!='\0'){
+        if(isspace(line2[i]))i++;
+        if(line2[i] == ','&& !num){
+            printf("This line %s\nHas Wrong format with first comma\n",line);
+            return 0;
+        }
+        if(!isspace(line[i])&&line[i] != ','){
+            num=1;
+        }
+        i++;
+    }
+    if(comma){
+        printf("This line %s\nHas Wrong format\n",line);
+        return 0;
+    }
     return 1;
 }

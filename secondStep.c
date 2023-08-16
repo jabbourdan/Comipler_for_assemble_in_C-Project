@@ -63,23 +63,23 @@ void secondCheck(char* fileName,struct dataTable* dataTail, struct  machineCode*
                 value = stringOrData(line, index);
                 tempIC = tempIC + value;
                 continue;
-            } else if (extryOrExtery(line, index)) {
-                if (extryOrExtery(line, index) == 1) {//extern
+            } else if (entryOrExtery(line, index)) {
+                if (entryOrExtery(line, index) == 1) {//extern
                     checkTheExtern(dataTail, line, index);
-                } else if (extryOrExtery(line, index) == 2) {
+                } else if (entryOrExtery(line, index) == 2) {
                     checkTheEntry(dataTail, line, index);
                 }
-            } else var = opCode(line, index, machineTemp);
-            if (var == -1) {
+            } else index = opCode(line, index, machineTemp);
+            if (index == -1) {
                 continue;
             }
             tempIC++;
             updateTheMachineOfTheFunction(dataTail, machineTail, line,1,tempIC);
         }
-        else if (extryOrExtery(line, index)) {
-            if (extryOrExtery(line, index) == 1) {//extern
+        else if (entryOrExtery(line, index)) {
+            if (entryOrExtery(line, index) == 1) {//extern
                 checkTheExtern(dataTail, line, 0);
-            } else if (extryOrExtery(line, index) == 2) {
+            } else if (entryOrExtery(line, index) == 2) {
                 checkTheEntry(dataTail, line, 0);
             }
             free(temp);
@@ -89,8 +89,8 @@ void secondCheck(char* fileName,struct dataTable* dataTail, struct  machineCode*
             tempIC = tempIC + value;
             continue;
         }else{
-            var = opCode(line, index, machineTemp);
-            if (var == -1) {
+            index = opCode(line, index, machineTemp);
+            if (index == -1) {
                 continue;
             }
             tempIC++;
@@ -98,5 +98,5 @@ void secondCheck(char* fileName,struct dataTable* dataTail, struct  machineCode*
         }
     }
     printf("END");
-    printAllMachineCodes(machineTail);
+    //rintAllMachineCodes(machineTail);
 }

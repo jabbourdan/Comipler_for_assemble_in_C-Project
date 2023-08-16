@@ -33,10 +33,10 @@ int isSymbol(char line[], struct dataTable *temp, struct dataTable *dataTable,in
     }
 
     if (line[index] == ':') {
-        if(validSymbol(line, sname, index)!=1){
+        if(validSymbol(line, index)!=1){
             printf("This line %s\nHas Wrong format",line);
         }
-        if (validSymbol(line, sname, index)==1) {
+        if (validSymbol(line, index)==1) {
             if (notExistSymbol(dataTable, sname) && step==1) {
                 strcpy(temp->symbol, sname);
                 return 1;
@@ -123,7 +123,7 @@ int opCode(char line[], int index, struct machineCode *machineCode) /* Return th
     return index;
 }
 
-int extryOrExtery(char line[],int index){
+int entryOrExtery(char line[],int index){
 
     int aindex = 0 ;
     char att[MAX_LINE_LENGTH];
@@ -211,14 +211,14 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
                     dataTB=1;
                     machineTB=1;
                 }
-            }else if(extryOrExtery(line,ind) == 2){ //entry
-                if(validEntry(line)){
+            }else if(entryOrExtery(line,ind) == 2){ //entry
+                if(validEntryAndExtern(line,ind)){
                     putTheEntryOrExternIn(dataHead,line,flagData,"entry",ind);
                     flagData=0;
                     dataTB=0;
                 }
-            }else if(extryOrExtery(line,ind) == 1){//extern
-                if(validEntry(line)) {
+            }else if(entryOrExtery(line,ind) == 1){//extern
+                if(validEntryAndExtern(line,ind)) {
                     putTheEntryOrExternIn(dataHead, line, flagData, "extern", 0);
                     flagData = 0;
                     dataTB = 0;
@@ -252,19 +252,19 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
                 tempDC = tempDC + value;
                 machineTB=1;
             }
-        }else if(extryOrExtery(line,0) == 2){ //entry
-            if(validEntry(line)){
+        }else if(entryOrExtery(line,0) == 2){ //entry
+            if(validEntryAndExtern(line,ind)){
                 putTheEntryOrExternIn(dataHead,line,flagData,"entry",0);
                 flagData=0;
                 dataTB=0;
             }
-        }else if(extryOrExtery(line,0) == 1){//extern
-            if(validEntry(line)) {
+        }else if(entryOrExtery(line,0) == 1){//extern
+            if(validEntryAndExtern(line,ind)) {
                 putTheEntryOrExternIn(dataHead, line, flagData, "extern", 0);
                 flagData = 0;
                 dataTB = 0;
             }
-        }else if(extryOrExtery(line,0) == 0){//if not entry or extern (if it's a regular function like move ...)
+        }else if(entryOrExtery(line,0) == 0){//if not entry or extern (if it's a regular function like move ...)
             while(isspace(line[ind])){
                 ind++;
             }
