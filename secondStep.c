@@ -17,6 +17,7 @@ void printAllMachineCodes(struct machineCode* head) {
             printf("%c", current->secondArgAddress[i]);
         }
         printf("\n");
+        printf("\n");
         current = current->next;
     }
 }
@@ -98,5 +99,5 @@ void secondCheck(char* fileName,struct dataTable* dataTail, struct  machineCode*
         }
     }
     printf("END");
-    //rintAllMachineCodes(machineTail);
+    printAllMachineCodes(machineTail);
 }

@@ -200,6 +200,7 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
                         tempDC = tempDC + value;
                         dataTB=1;
                         machineTB=1;
+
                     }
                 }else if (validString(line, ind)) {
                     value = stringOrData(line, ind);

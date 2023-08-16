@@ -342,7 +342,32 @@ char* convertTheArgToBinary(struct dataTable* headTable,char* arg,int type,const
     return binnary;
 }
 
+void updateTheOpCode(struct machineCode* head,char* funName,int typeFirsArg ,int typeSecondArg){
+    char* binaryFirstArg = changeBinary(typeFirsArg,3);
+    char* binarySecondArg = changeBinary(typeSecondArg,3);
+    char* binaryFunc = head->functAdress;
+    size_t totalLength = strlen(binaryFirstArg) + strlen(binarySecondArg) + strlen(binaryFunc) + 1;
+    char* concatenated = (char*)malloc(totalLength);
+    if (concatenated) {
+        if(strcmp(binarySecondArg,"000") ==0){
+            strcpy(concatenated, binarySecondArg);
+            strcat(concatenated, binaryFunc);
+            strcat(concatenated, binaryFirstArg);
 
+
+        }else {
+            strcpy(concatenated, binaryFirstArg);
+            strcat(concatenated, binaryFunc);
+            strcat(concatenated, binarySecondArg);
+        }
+        concatenated = shiftBinary(concatenated,2,0);
+        //free(concatenated);
+    } else {
+        printf("Memory allocation failed\n");
+    }
+
+
+}
 void updateMachineAtPosition(struct machineCode* head,struct dataTable* headData,char* firstArg,char* secondArg,char* funcName,int tempIC){
     struct machineCode* current = head;
     int typeFirsArg,typeSecondArg,count=1;
@@ -356,6 +381,7 @@ void updateMachineAtPosition(struct machineCode* head,struct dataTable* headData
     }
     while (current != NULL) {
         if (!strcmp(current->funct,funcName) && count==tempIC) {
+            updateTheOpCode(current,funcName,typeFirsArg,typeSecondArg);
             if(typeFirsArg==5 && typeSecondArg==5){
 
             }else
@@ -380,6 +406,7 @@ void updateMachineAtPosition(struct machineCode* head,struct dataTable* headData
         count++;
         current = current->next;
     }
+
 }
 void updateTheMachineOfTheFunction(struct dataTable* headTable, struct machineCode* head, char line[], int isSymbol,int tempIC ) {
     char* funcNameSymbol = (char*)malloc(MAX_SYMBOL_LENGTH);;
@@ -389,7 +416,6 @@ void updateTheMachineOfTheFunction(struct dataTable* headTable, struct machineCo
     while (isspace(line[index])) {
         index++;
     }
-
     if (isSymbol) {
         // Code for processing symbol
         while(!isspace(line[index]))index++;
