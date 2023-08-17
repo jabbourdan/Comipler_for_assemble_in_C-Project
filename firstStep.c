@@ -78,7 +78,7 @@ int dataArg(char line[], int index) /*Summarize the number of values in the data
     return count;
 }
 
-int stringOrData(char line[],int index) /*Checks whether this is a data prompt or a string prompt, if so returns the space to be allocated for them*/
+int stringOrData(char line[],int index,int symbol) /*Checks whether this is a data prompt or a string prompt, if so returns the space to be allocated for them*/
 {
     int aindex = 0;
     char att[MAX_LINE_LENGTH];
@@ -187,10 +187,10 @@ int firstcheck(char *fileName, char* errorFileName,struct dataTable *dataHead, s
                 ind++;
             while (!isspace(line[ind]))
                 ind++;
-            if (stringOrData(line, ind)) {
+            if (stringOrData(line, ind,1)) {
                 if (strstr(line, ".data") != NULL) {
                     if (validateDataSyntax(line, errorFileName,ind)) {
-                        value = stringOrData(line, ind);
+                        value = stringOrData(line, ind,1);
                         temp->numberOfValues=value;
                         temp->adress=tempIC;
                         insserTheNumbers(errorFileName,machineTemp,line);
@@ -200,7 +200,7 @@ int firstcheck(char *fileName, char* errorFileName,struct dataTable *dataHead, s
                         machineTB=1;
                     }
                 }else if (validString(line, errorFileName,ind)) {
-                    value = stringOrData(line, ind);
+                    value = stringOrData(line, ind,1);
                     temp->numberOfValues=value;
                     temp->adress=tempIC;
                     insertTheString(machineTemp,line);
@@ -234,17 +234,17 @@ int firstcheck(char *fileName, char* errorFileName,struct dataTable *dataHead, s
             }
 
         }
-        else if (stringOrData(line, ind)) {
+        else if (stringOrData(line, ind,0)) {
             if (strstr(line, ".data") != NULL) {
                 if (validateDataSyntax(line,errorFileName, ind)) {
-                    value = stringOrData(line, ind);
+                    value = stringOrData(line, ind,0);
                     insserTheNumbers(errorFileName,machineTemp,line);
                     tempIC = tempIC + value;
                     tempDC = tempDC + value;
                     machineTB=1;
                 }
             }else if (validString(line, errorFileName,ind)) {
-                value = stringOrData(line, ind);
+                value = stringOrData(line, ind,0);
                 insertTheString(machineTemp,line);
                 tempIC = tempIC + value;
                 tempDC = tempDC + value;

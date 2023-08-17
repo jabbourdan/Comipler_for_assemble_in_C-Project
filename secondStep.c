@@ -1,32 +1,10 @@
 #include "secondStep.h"
-void printAllMachineCodes(struct machineCode* head) {
-    struct machineCode* current = head;
-    int i;
-
-    while (current != NULL) {
-        printf("The Opcode: ");
-        for (i = 0; i < 12; i++) {
-            printf("%c", current->opcode[i]);
-        }
-        printf("\nThe First code: ");
-        for (i = 0; i < 12; i++) {
-            printf("%c", current->firstArgAddress[i]);
-        }
-        printf("\nThe second code: ");
-        for (i = 0; i < 12; i++) {
-            printf("%c", current->secondArgAddress[i]);
-        }
-        printf("\n");
-        printf("\n");
-        current = current->next;
-    }
-}
 void secondCheck(char* fileName,char* errorFileName,struct dataTable* dataTail, struct  machineCode* machineTail,int *IC,int *DC){
     printf("----------------------\n");
     printf("----second step-------\n");
     printf("----------------------\n");
     char line[MAX_LINE_LENGTH];
-    int index,var,value,tempIC;
+    int index,value,tempIC;
     FILE  *fileAm;
     fileAm = open_file(fileName,"r");
 
@@ -46,8 +24,8 @@ void secondCheck(char* fileName,char* errorFileName,struct dataTable* dataTail, 
                 index++;
             while (!isspace(line[index]))
                 index++;
-            if (stringOrData(line, index)) {
-                value = stringOrData(line, index);
+            if (stringOrData(line, index,1)) {
+                value = stringOrData(line, index,1);
                 tempIC = tempIC + value;
                 continue;
             } else if (entryOrExtery(line, index)) {
@@ -71,8 +49,8 @@ void secondCheck(char* fileName,char* errorFileName,struct dataTable* dataTail, 
             }
             free(temp);
             free(machineTemp);
-        }else if(stringOrData(line,index)){
-            value = stringOrData(line, index);
+        }else if(stringOrData(line,index,0)){
+            value = stringOrData(line, index,0);
             tempIC = tempIC + value;
             continue;
         }else{

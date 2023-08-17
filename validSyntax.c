@@ -55,6 +55,8 @@ int validateDataSyntax(char line[],char *errorFileName,int index) {
     strcpy(mainLine,line);
     char *line1=line;
     char *line2=line;
+    char line3[MAX_LINE_LENGTH];
+    strcpy(line3,line);
     const char delimiters[] = " ,";
     char *token;
     int last_comma = -2;
@@ -111,7 +113,7 @@ int validateDataSyntax(char line[],char *errorFileName,int index) {
         printf_line_error(errorFileName,mainLine,"This line has wrong format\n");
         return 0;
     }
-    token = strtok(line + index, delimiters);
+    token = strtok(line3 + index, delimiters);
     while (token != NULL) {
         // If the token starts with a digit or a minus sign followed by a digit
 

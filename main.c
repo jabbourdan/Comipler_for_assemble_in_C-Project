@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
         size_t extensionLength = strlen(extension_as);
         char *fileEnd;
         struct  dataTable* dataHead = NULL;
-        //struct  machineCode* machineTail= NULL;
+
         struct  machineCode* machineHead = NULL;
         dataHead = (struct dataTable*)malloc(sizeof(struct dataTable));
         dataHead->next = NULL;
@@ -57,10 +57,16 @@ int main(int argc, char *argv[]) {
         }
 
         firstcheck(fileEnd,errorFile,dataHead,machineHead,&IC,&DC);
-        //secondCheck(fileEnd,errorFile,dataHead,machineHead,&IC,&DC);
+        secondCheck(fileEnd,errorFile,dataHead,machineHead,&IC,&DC);
 
         if(returnIfThereIsNoErrors(errorFile)){
-            printTheObFile(fileEnd,&IC,&DC);
+            printTheObFile(machineHead,fileEnd,&IC,&DC);
+            if(checkIfTheEntryOrExtern(dataHead,"entry")){
+                makeTheEntryAndExtern(dataHead,machineHead,fileEnd,"entry","ent");
+            }
+            if(checkIfTheEntryOrExtern(dataHead,"extern")){
+                makeTheEntryAndExtern(dataHead,machineHead,fileEnd,"extern","ext");
+            }
         }
         //remove("error_output.txt");
         free(file);

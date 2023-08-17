@@ -259,33 +259,6 @@ int checkBothRegOrNot(const char line[]){
     return thereIsTwoArgs;
 }
 
-void argFuntion(const char line[],int index, struct machineCode* head,char functionName[]){
-
-    if(strcmp(functionName, "lea") == 0){
-        strcpy(head->firstArgAddress,"000000000000");
-        strcpy(head->secondArgAddress,"000000000000");
-        strcpy(head->secondArg,"000000000000");
-        strcpy(head->firstArg,"000000000000");
-    }else if(strcmp(functionName, "not") == 0 || strcmp(functionName, "clr") == 0 || strcmp(functionName, "inc") == 0 || strcmp(functionName, "dec") == 0 || strcmp(functionName, "jmp") == 0 ||
-             strcmp(functionName, "bne") == 0 || strcmp(functionName, "red") == 0 || strcmp(functionName, "prn") == 0 || strcmp(functionName, "jsr") == 0){
-        strcpy(head->firstArgAddress,"000000000000");
-        strcpy(head->secondArgAddress,"NULL");
-        strcpy(head->secondArg,"NULL");
-        strcpy(head->firstArg,"000000000000");
-    }else if(strcmp(functionName, "mov") == 0 || strcmp(functionName, "cmp") == 0 || strcmp(functionName, "add") == 0 || strcmp(functionName, "sub") == 0){
-        if(checkBothRegOrNot(line) == 2){
-            strcpy(head->firstArgAddress,"000000000000");
-            strcpy(head->secondArgAddress,"NULL");
-            strcpy(head->secondArg,"NULL");
-            strcpy(head->firstArg,"000000000000");
-        }else if(checkBothRegOrNot(line) != 2){
-            strcpy(head->firstArgAddress,"000000000000");
-            strcpy(head->secondArgAddress,"000000000000");
-            strcpy(head->secondArg,"000000000000");
-            strcpy(head->firstArg,"000000000000");
-        }
-    }
-}
 char* shiftBinary(char* binary, int positions, int direction) {//0 left 1 for right
     unsigned long long length = strlen(binary);
     char* shiftedBinary = NULL;
@@ -324,7 +297,8 @@ char* convertTheArgToBinary(char line[],char *errorFileName,struct dataTable* he
             return 0;
         }
         value=strtol(arg, NULL, 10);
-        binnary = changeBinary((int)value,12);
+        binnary = changeBinary((int)value,10);
+        binnary = shiftBinary(binnary, 2,0);
     }else if(type==3){
         binnary= extractTheAdressOfSymbol(headTable,arg,tempIC);
     }else if(type==5&&secondArg==NULL){

@@ -1,2 +1,4 @@
+.entry MAIN
 MAIN: mov @r3 ,LENGTH
-    .data 221231232312
+    .data 21
+    .extern MAAAA

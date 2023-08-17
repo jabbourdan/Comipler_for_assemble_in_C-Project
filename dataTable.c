@@ -175,6 +175,7 @@ void putTheEntryOrExternIn(char *errorFileName,struct dataTable* dataHead, char 
         }
 
         strcpy(temp1->symbol ,token);
+
         strcpy(temp1->type,type);
         if(flag){
             *dataHead = *temp1;
