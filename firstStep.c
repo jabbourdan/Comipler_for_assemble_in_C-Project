@@ -1,7 +1,8 @@
 #include "firstStep.h"
 
 int is_newline_or_spaces(const char *line) {
-    // Check if the line is empty (contains only whitespace characters)
+    /* Check if the line is empty (contains only whitespace characters) */
+    int begins_with_newline;
     size_t len = strlen(line);
     size_t i;
     int is_empty = 1;
@@ -11,7 +12,7 @@ int is_newline_or_spaces(const char *line) {
             break;
         }
     }
-    int begins_with_newline = line[0] == '\n';
+    begins_with_newline = line[0] == '\n';
 
     return is_empty || begins_with_newline;
 }
@@ -52,7 +53,7 @@ int isSymbol(char line[],char *errorFileName, struct dataTable *temp, struct dat
 
 
 
-int stringArg(char line[], int index)/*Summarize the number of chars in the string prompt*/
+int stringArg(char line[], int index) /*Summarize the number of chars in the string prompt*/
 {
     int count = 0;
     while (isspace(line[index]))
@@ -67,7 +68,7 @@ int stringArg(char line[], int index)/*Summarize the number of chars in the stri
     return count+1;
 }
 
-int dataArg(char line[], int index) /*Summarize the number of values in the data prompt*/
+int dataArg(const char line[], int index) /*Summarize the number of values in the data prompt*/
 {
     int count = 1;
     while (line[index] != '\0') {
@@ -78,12 +79,9 @@ int dataArg(char line[], int index) /*Summarize the number of values in the data
     return count;
 }
 
-int stringOrData(char line[],int index,int symbol) /*Checks whether this is a data prompt or a string prompt, if so returns the space to be allocated for them*/
-{
+int stringOrData(char line[],int index) /*Checks whether this is a data prompt or a string prompt, if so returns the space to be allocated for them*/{
     int aindex = 0;
     char att[MAX_LINE_LENGTH];
-    if (line[index] == '\n')
-        return 0;
     memset(att, '\0', MAX_LINE_LENGTH);
     while (isspace(line[index]))
         index++;
@@ -144,7 +142,7 @@ int entryOrExtery(char line[],int index){
 }
 int numOfArg(struct  machineCode* machineCode,char line[]){
     if(!strcmp(machineCode->functAdress,"0000") || !strcmp(machineCode->functAdress,"0001") || !strcmp(machineCode->functAdress,"0110") || !strcmp(machineCode->functAdress,"0010") ||!strcmp(machineCode->functAdress,"0011"))
-        if(checkBothRegOrNot(line)==2 && strcmp(machineCode->functAdress,"0110")){ //not lea
+        if(checkBothRegOrNot(line)==2 && strcmp(machineCode->functAdress,"0110") != 0){ /*not lea*/
             return 2;
         }else
             return 3;
@@ -163,10 +161,9 @@ int firstcheck(char *fileName, char* errorFileName,struct dataTable *dataHead, s
     FILE *file = open_file(fileName, "r");
     struct dataTable *tail = NULL;
     struct machineCode *tailMachine = NULL;
-    tail = (struct dataTable *)malloc(sizeof(struct dataTable));
+    struct machineCode *machineTemp =NULL;
+    struct dataTable * temp = NULL;
     tail = dataHead;
-
-    tailMachine=(struct machineCode *)malloc(sizeof(struct machineCode));
     tailMachine=machineHead;
 
     memset(line, '\0', MAX_LINE_LENGTH);
@@ -175,8 +172,8 @@ int firstcheck(char *fileName, char* errorFileName,struct dataTable *dataHead, s
             continue;
         }
 
-        struct machineCode *machineTemp = NULL;
-        struct dataTable *temp = NULL;
+        machineTemp = NULL;
+        temp = NULL;
         machineTemp = (struct machineCode *) malloc(sizeof(struct machineCode));
         temp = (struct dataTable *) malloc(sizeof(struct dataTable));
         machineTemp->next = NULL;
@@ -187,10 +184,10 @@ int firstcheck(char *fileName, char* errorFileName,struct dataTable *dataHead, s
                 ind++;
             while (!isspace(line[ind]))
                 ind++;
-            if (stringOrData(line, ind,1)) {
+            if (stringOrData(line, ind)) {
                 if (strstr(line, ".data") != NULL) {
                     if (validateDataSyntax(line, errorFileName,ind)) {
-                        value = stringOrData(line, ind,1);
+                        value = stringOrData(line, ind);
                         temp->numberOfValues=value;
                         temp->adress=tempIC;
                         insserTheNumbers(errorFileName,machineTemp,line);
@@ -200,7 +197,7 @@ int firstcheck(char *fileName, char* errorFileName,struct dataTable *dataHead, s
                         machineTB=1;
                     }
                 }else if (validString(line, errorFileName,ind)) {
-                    value = stringOrData(line, ind,1);
+                    value = stringOrData(line, ind);
                     temp->numberOfValues=value;
                     temp->adress=tempIC;
                     insertTheString(machineTemp,line);
@@ -209,13 +206,13 @@ int firstcheck(char *fileName, char* errorFileName,struct dataTable *dataHead, s
                     dataTB=1;
                     machineTB=1;
                 }
-            }else if(entryOrExtery(line,ind) == 2){ //entry
+            }else if(entryOrExtery(line,ind) == 2){ /*entry */
                 if(validEntryAndExtern(line,errorFileName,ind)){
                     putTheEntryOrExternIn(errorFileName,dataHead,line,flagData,"entry",ind);
                     flagData=0;
                     dataTB=0;
                 }
-            }else if(entryOrExtery(line,ind) == 1){//extern
+            }else if(entryOrExtery(line,ind) == 1){/*extern */
                 if(validEntryAndExtern(line,errorFileName,ind)) {
                     putTheEntryOrExternIn(errorFileName,dataHead, line, flagData, "extern", 0);
                     flagData = 0;
@@ -234,35 +231,35 @@ int firstcheck(char *fileName, char* errorFileName,struct dataTable *dataHead, s
             }
 
         }
-        else if (stringOrData(line, ind,0)) {
+        else if (stringOrData(line, ind)) {
             if (strstr(line, ".data") != NULL) {
                 if (validateDataSyntax(line,errorFileName, ind)) {
-                    value = stringOrData(line, ind,0);
+                    value = stringOrData(line, ind);
                     insserTheNumbers(errorFileName,machineTemp,line);
                     tempIC = tempIC + value;
                     tempDC = tempDC + value;
                     machineTB=1;
                 }
             }else if (validString(line, errorFileName,ind)) {
-                value = stringOrData(line, ind,0);
+                value = stringOrData(line, ind);
                 insertTheString(machineTemp,line);
                 tempIC = tempIC + value;
                 tempDC = tempDC + value;
                 machineTB=1;
             }
-        }else if(entryOrExtery(line,0) == 2){ //entry
+        }else if(entryOrExtery(line,0) == 2){ /*entry */
             if(validEntryAndExtern(line,errorFileName,ind)){
                 putTheEntryOrExternIn(errorFileName,dataHead,line,flagData,"entry",0);
                 flagData=0;
                 dataTB=0;
             }
-        }else if(entryOrExtery(line,0) == 1){//extern
+        }else if(entryOrExtery(line,0) == 1){/*extern */
             if(validEntryAndExtern(line,errorFileName,ind)) {
                 putTheEntryOrExternIn(errorFileName,dataHead, line, flagData, "extern", 0);
                 flagData = 0;
                 dataTB = 0;
             }
-        }else if(entryOrExtery(line,0) == 0){//if not entry or extern (if it's a regular function like move ...)
+        }else if(entryOrExtery(line,0) == 0){/*if not entry or extern (if it's a regular function like move ...)*/
             while(isspace(line[ind])){
                 ind++;
             }

@@ -1,4 +1,3 @@
-
 #ifndef FIRSTSTEP_H
 #define FIRSTSTEP_H
 #include <stdio.h>
@@ -13,9 +12,9 @@
 #include "secondStep.h"
 int isSymbol(char line[],char *errorFileName, struct  dataTable* temp,struct  dataTable* dataTable,int step);
 int firstcheck(char* fileName, char* errorFileName,struct  dataTable* shead, struct  machineCode* dhead, int *IC, int *DC);
-int stringOrData(char line[] , int index,int symbol);
+int stringOrData(char line[] , int index);
 int stringArg(char line[] , int index);
-int dataArg(char line[] , int index);
+int dataArg(const char line[] , int index);
 int opCode(char line[],char *errorFileName, int ind ,struct  machineCode* machineCode);
 int entryOrExtery(char line[],int index);
 int numOfArg(struct  machineCode* machineCode,char line[]);

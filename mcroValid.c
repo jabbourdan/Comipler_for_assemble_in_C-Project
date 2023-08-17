@@ -1,6 +1,6 @@
 #include "mcroValid.h"
 
-funNotAllowed macroNames[16] = {
+funNotAllowed macroNames[24] = {
         {"mov"},
         {"cmp"},
         {"add"},
@@ -16,7 +16,15 @@ funNotAllowed macroNames[16] = {
         {"prn"},
         {"jsr"},
         {"rts"},
-        {"stop"}
+        {"stop"},
+        {"@r1"},
+        {"@r2"},
+        {"@r3"},
+        {"@r4"},
+        {"@r5"},
+        {"@r6"},
+        {"@r7"},
+        {"@r0"}
 };
 
 FILE* open_file(const char* file, char* operator) {
@@ -28,7 +36,7 @@ FILE* open_file(const char* file, char* operator) {
 }
 int isValidRestrictedWord(const char* word) {
     int i;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < 24; i++) {
         if (strcmp(word, macroNames[i].name) == 0) {
             return 0;
         }
@@ -46,20 +54,20 @@ int validMacro(char* file) {
     int i;
     FILE* inputFile = open_file(file,"r");
 
-    // Read each line of the file
+    /* Read each line of the file */
     while (fgets(line, sizeof(line), inputFile)) {
-        // Tokenize the line into words
+        /* Tokenize the line into words */
         char* token = strtok(line, " \t\n\r");
 
-        // Check each word
+        /* Check each word */
         while (token != NULL) {
-            // Compare the word with the target word
+            /* Compare the word with the target word */
             if (strcmp(token, word) == 0) {
-                // Check if there are only spaces or no spaces before the keyword
+                /* Check if there are only spaces or no spaces before the keyword */
                 int tokenIndex = token - line;
                 int validMacro = 1;
 
-                // Check before the keyword
+                /* Check before the keyword */
                 for (i = 0; i < tokenIndex; i++) {
                     if (line[i] != ' ') {
                         validMacro = 0;
@@ -67,7 +75,7 @@ int validMacro(char* file) {
                     }
                 }
 
-                // Check if the next word exists
+                /* Check if the next word exists */
                 char* nextWord = strtok(NULL, " \t\n\r");
 
 
@@ -75,7 +83,7 @@ int validMacro(char* file) {
                     validMacro = 0;
                     return 0;
                 } else {
-                    // Check if there are additional words after the next word
+                    /* Check if there are additional words after the next word */
                     char* additionalWord = strtok(NULL, " \t\n\r");
                     if (additionalWord != NULL) {
                         validMacro = 0;
@@ -91,11 +99,11 @@ int validMacro(char* file) {
             }
 
             if (strcmp(token, endWord) == 0) {
-                // Check if there are only spaces or no spaces before the keyword
+                /* Check if there are only spaces or no spaces before the keyword */
                 int tokenIndex = token - line;
                 int validEndMacro = 1;
 
-                // Check before the keyword
+                /* Check before the keyword */
                 for (i = 0; i < tokenIndex; i++) {
                     if (line[i] != ' ') {
                         validEndMacro = 0;
@@ -103,7 +111,7 @@ int validMacro(char* file) {
                     }
                 }
 
-                // Check if there are additional words after the keyword
+                /* Check if there are additional words after the keyword */
                 char* nextWord = strtok(NULL, " \t\n\r");
                 if (nextWord != NULL) {
                     validEndMacro = 0;
@@ -128,7 +136,6 @@ int validMacro(char* file) {
 
     fclose(inputFile);
 
-    // Print the result
     if (found&endfound) {
         return 1;
     } else {

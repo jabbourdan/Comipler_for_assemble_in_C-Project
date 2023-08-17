@@ -16,7 +16,7 @@ struct dataTable  {
 };
 void putTheEntryOrExternIn(char *errorFileName,struct dataTable * temp,char line[],int flag,const char * type,int index);
 int notExistSymbol(char line[],char* errorFileName,struct dataTable *dataTable, char sname[]);
-char* extractTheAdressOfSymbol(struct dataTable* head,char* symbol,int tempIC);
+char* extractTheAdressOfSymbol(struct dataTable* head,char* symbol);
 void checkTheExtern(char* errorFileName,struct dataTable* head,char line[],int index);
 int checkTheEntry(char *errorFileName,struct dataTable *head, char line[],int index);
 #endif

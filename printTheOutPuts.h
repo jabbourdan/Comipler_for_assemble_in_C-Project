@@ -6,7 +6,7 @@
 #include "machineCode.h"
 #include "dataTable.h"
 int returnIfThereIsNoErrors(char *filename);
-void printTheObFile(struct machineCode* machineHead,char *filename,int *IC,int *DC);
+void printTheObFile(struct machineCode* machineHead,char *filename,const int *IC,const int *DC);
 int checkIfTheEntryOrExtern(struct dataTable* dataHead,char* typeToCheck);
 void makeTheEntryAndExtern(struct dataTable* dataHead,struct machineCode* machineCode,char *fileName,char *tpye,char* extenstion);
 #endif

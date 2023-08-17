@@ -3,17 +3,17 @@
 int returnIfThereIsNoErrors(char* filename) {
     FILE* file = fopen(filename, "r");
 
-    fseek(file, 0, SEEK_END); // Move to the end of the file
+    fseek(file, 0, SEEK_END); /* Move to the end of the file */
     if (ftell(file) == 0 || file==NULL) {
-        //printf("File %s is empty.\n",filename);
+        printf("File %s is empty.\n",filename);
         fclose(file);
-        return 1; // Return code for empty file
+        return 1; /* Return code for empty file */
     }else
         printf("File %s is not empty.\n",filename);
 
     fclose(file);
 
-    return 0; // Return code for non-empty file
+    return 0; /* Return code for non-empty file */
 }
 int binaryToDecimal(const char *binary) {
     int decimal = 0,i;
@@ -28,13 +28,13 @@ void printTheBase64(struct machineCode* head,FILE* fileOb){
     int decimal1 ,decimal2 ;
     const char base64_table[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     char base64_char1,base64_char2;
-    char first_6_bits[7]; // Including null terminator
-    char second_6_bits[7];
+    char first_6_bits[7]; /* Including null terminator */
+    char second_6_bits[7]; /* Including null terminator */
     while(current != NULL){
         if(current->opcode[0] != '\0'){
             strncpy(first_6_bits, current->opcode, 6);
             first_6_bits[6] = '\0';
-            // Extract the second 6-bit portion and pad with zeros if needed
+            /* Extract the second 6-bit portion and pad with zeros if needed */
             strncpy(second_6_bits, current->opcode + 6, 6);
             second_6_bits[6] = '\0';
             decimal1 = binaryToDecimal(first_6_bits);
@@ -42,13 +42,12 @@ void printTheBase64(struct machineCode* head,FILE* fileOb){
 
             base64_char1 = base64_table[decimal1];
             base64_char2 = base64_table[decimal2];
-            //printf("Original binary string: %s\n", current->opcode);
             fprintf(fileOb, "%c%c\n", base64_char1, base64_char2);
         }
         if(current->firstArgAddress[0] != '\0'){
             strncpy(first_6_bits, current->firstArgAddress, 6);
             first_6_bits[6] = '\0';
-            // Extract the second 6-bit portion and pad with zeros if needed
+            /* Extract the second 6-bit portion and pad with zeros if needed */
             strncpy(second_6_bits, current->firstArgAddress + 6, 6);
             second_6_bits[6] = '\0';
             decimal1 = binaryToDecimal(first_6_bits);
@@ -56,13 +55,12 @@ void printTheBase64(struct machineCode* head,FILE* fileOb){
 
             base64_char1 = base64_table[decimal1];
             base64_char2 = base64_table[decimal2];
-            //printf("Original binary string: %s\n", current->firstArgAddress);
             fprintf(fileOb, "%c%c\n", base64_char1, base64_char2);
         }
         if(current->secondArgAddress[0] != '\0'){
             strncpy(first_6_bits, current->secondArgAddress, 6);
             first_6_bits[6] = '\0';
-            // Extract the second 6-bit portion and pad with zeros if needed
+            /* Extract the second 6-bit portion and pad with zeros if needed */
             strncpy(second_6_bits, current->secondArgAddress + 6, 6);
             second_6_bits[6] = '\0';
             decimal1 = binaryToDecimal(first_6_bits);
@@ -70,7 +68,6 @@ void printTheBase64(struct machineCode* head,FILE* fileOb){
 
             base64_char1 = base64_table[decimal1];
             base64_char2 = base64_table[decimal2];
-            //printf("Original binary string: %s\n", current->secondArgAddress);
             fprintf(fileOb, "%c%c\n", base64_char1, base64_char2);
         }
         current = current->next;
@@ -78,7 +75,7 @@ void printTheBase64(struct machineCode* head,FILE* fileOb){
 
 }
 
-void printTheObFile(struct machineCode* machineHead,char *fileName,int *IC,int *DC){
+void printTheObFile(struct machineCode* machineHead,char *fileName,const int *IC,const int *DC){
     char fileNameOb[MAX_LINE_LENGTH];
     FILE *fileOb;
 
@@ -100,7 +97,7 @@ int checkIfTheEntryOrExtern(struct dataTable* dataHead,char* typeToCheck){
 
     while (current != NULL) {
         if (strcmp(current->type, typeToCheck) == 0) {
-            return 1; // Found the specified type, return 1
+            return 1; /* Found the specified type, return 1 */
         }
         current = current->next;
     }
@@ -136,7 +133,7 @@ void printTheEntry(char* fileName,struct dataTable* dataHead,char* type){
     }
 }
 void printExtern(char* fileName,struct machineCode* machineHead,struct dataTable* dataHead,char *type){
-    int count = 100;
+    int count;
     struct dataTable* currentData = dataHead;
     struct machineCode* tempMachine;
     char fileNameExt[MAX_LINE_LENGTH];
@@ -158,7 +155,6 @@ void printExtern(char* fileName,struct machineCode* machineHead,struct dataTable
         if(strcmp(currentData->type,type)==0){
             while(tempMachine != NULL){
                 if(strcmp(currentData->symbol,tempMachine->firstArg)==0 || strcmp(currentData->symbol,tempMachine->secondArg)==0){
-                    //count++;
                     fprintf(fileExt,"The symbol is : %s and the value is %d\n",currentData->symbol,count+1);
                 }
                 if(tempMachine->opcode[0] != '\0'){

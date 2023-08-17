@@ -59,6 +59,7 @@ int validateDataSyntax(char line[],char *errorFileName,int index) {
     strcpy(line3,line);
     const char delimiters[] = " ,";
     char *token;
+    long long number;
     int last_comma = -2;
     char *endptr;
     while (line[index1] != '\0') {
@@ -76,7 +77,7 @@ int validateDataSyntax(char line[],char *errorFileName,int index) {
         if (line[index1] == ',') {
 
             num_flag = 0;
-        };
+        }
         index1++;
     }
     /* second run adjacent comma check*/
@@ -115,14 +116,14 @@ int validateDataSyntax(char line[],char *errorFileName,int index) {
     }
     token = strtok(line3 + index, delimiters);
     while (token != NULL) {
-        // If the token starts with a digit or a minus sign followed by a digit
+        /* If the token starts with a digit or a minus sign followed by a digit */
 
-        long long number = strtoll(token, &endptr, 10);
+        number = strtoll(token, &endptr, 10);
         if (number <= -2048 || number >= 2047) {
             printf_line_error(errorFileName,mainLine,"error: this line has wrong number\n");
             return 0;
         }
-        // Find the next token
+        /* Find the next token */
         token = strtok(NULL, delimiters);
     }
     return 1;
@@ -280,7 +281,7 @@ int validArgsFun(char line[],char *errorFileName,char funcNameSymbol[],char* fir
 }
 
 int validEntryAndExtern(char line[],char *errorFileName,int index) {
-    //valid entry no first number, betwen every 2 word should be comma
+    /*valid entry no first number, betwen every 2 word should be comma */
     int index1 = returnIndexTheData(line,index);
     int num_flag = 0,comma=0;
     int last_non_space_idx = 0,num=0;

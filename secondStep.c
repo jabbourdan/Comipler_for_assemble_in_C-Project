@@ -1,8 +1,5 @@
 #include "secondStep.h"
 void secondCheck(char* fileName,char* errorFileName,struct dataTable* dataTail, struct  machineCode* machineTail,int *IC,int *DC){
-    printf("----------------------\n");
-    printf("----second step-------\n");
-    printf("----------------------\n");
     char line[MAX_LINE_LENGTH];
     int index,value,tempIC;
     FILE  *fileAm;
@@ -24,12 +21,12 @@ void secondCheck(char* fileName,char* errorFileName,struct dataTable* dataTail, 
                 index++;
             while (!isspace(line[index]))
                 index++;
-            if (stringOrData(line, index,1)) {
-                value = stringOrData(line, index,1);
+            if (stringOrData(line, index)) {
+                value = stringOrData(line, index);
                 tempIC = tempIC + value;
                 continue;
             } else if (entryOrExtery(line, index)) {
-                if (entryOrExtery(line, index) == 1) {//extern
+                if (entryOrExtery(line, index) == 1) {/*extern */
                     checkTheExtern(errorFileName,dataTail, line, index);
                 } else if (entryOrExtery(line, index) == 2) {
                     checkTheEntry(errorFileName,dataTail, line, index);
@@ -42,15 +39,15 @@ void secondCheck(char* fileName,char* errorFileName,struct dataTable* dataTail, 
             updateTheMachineOfTheFunction(errorFileName,dataTail, machineTail, line,1,tempIC);
         }
         else if (entryOrExtery(line, index)) {
-            if (entryOrExtery(line, index) == 1) {//extern
+            if (entryOrExtery(line, index) == 1) {/*extern */
                 checkTheExtern(errorFileName,dataTail, line, 0);
             } else if (entryOrExtery(line, index) == 2) {
                 checkTheEntry(errorFileName,dataTail, line, 0);
             }
             free(temp);
             free(machineTemp);
-        }else if(stringOrData(line,index,0)){
-            value = stringOrData(line, index,0);
+        }else if(stringOrData(line,index)){
+            value = stringOrData(line, index);
             tempIC = tempIC + value;
             continue;
         }else{

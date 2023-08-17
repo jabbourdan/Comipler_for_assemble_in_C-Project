@@ -17,4 +17,4 @@ char* returnSource(char line[],int index);
 int validArgsFun(char line[],char *errorFileName,char functionName[],char* firsArg,char* secondArg);
 int retrunTheNumberOfThetypeOfThearg(char line[],char *errorFileName,char* arg);
 void printf_line_error(char* errorFileName, char* line, char* message);
-#endif // VALIDSYNTAX_H
+#endif /* VALIDSYNTAX_H */

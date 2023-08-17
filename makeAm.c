@@ -2,16 +2,16 @@
 #include "mcroValid.h"
 
 char* makeAmFile(char* fileSource){
-    int length = strlen(fileSource);
-    // Allocate memory for the modified string
+    unsigned long long length = strlen(fileSource);
+    /* Allocate memory for the modified string */
     char* fileAm = malloc((length + 1) * sizeof(char));
-    // Copy the original string to the modified string
+    /* Copy the original string to the modified string */
     strcpy(fileAm, fileSource);
 
-    // Cut the last two characters
+    /* Cut the last two characters*/
     fileAm[length - 2] = '\0';
 
-    // Append "am" to the modified string
+    /* Append "am" to the modified string */
     strcat(fileAm, "am");
 
     return fileAm;
@@ -38,9 +38,9 @@ void reWriteAmFile(struct Macro** head, const char* file, const char* fileAm) {
     FILE* sourceFile = open_file(file, "r");
     FILE* destinationFile = open_file(fileAm, "w");
     char line[MAX_LINE_LENGTH];
-
     int skipLines = 0;
     int found ;
+
     char str[MAX_LINE_LENGTH];
     while (fgets(line, sizeof(line), sourceFile) != NULL) {
         strcpy(str,line);
@@ -61,7 +61,7 @@ void reWriteAmFile(struct Macro** head, const char* file, const char* fileAm) {
 
         while (temp != NULL) {
             if (strstr(line, temp->name) != NULL) {
-                // Replace the word in the line with the macro content
+                /* Replace the word in the line with the macro content */
                 char* replacedLine = malloc(strlen(line) + strlen(temp->content));
                 if (replacedLine == NULL) {
                     printf("Memory allocation failed.\n");
@@ -71,11 +71,11 @@ void reWriteAmFile(struct Macro** head, const char* file, const char* fileAm) {
                 }
 
                 strcpy(replacedLine, line);
-                char* word = strtok(replacedLine, " \t\n"); // Assuming words are separated by spaces, tabs, or newline
+                char* word = strtok(replacedLine, " \t\n"); /* Assuming words are separated by spaces, tabs, or newline */
 
                 while (word != NULL) {
                     if (strcmp(word, temp->name) == 0) {
-                        // Replace the word with the macro content
+                        /* Replace the word with the macro content */
                         fprintf(destinationFile, "%s ", temp->content);
                         fprintf(destinationFile, "\n");
 
@@ -87,12 +87,12 @@ void reWriteAmFile(struct Macro** head, const char* file, const char* fileAm) {
                 }
 
                 free(replacedLine);
-                break; // Break out of the loop once a match is found
+                break; /* Break out of the loop once a match is found */
             }
             temp = temp->next;
         }
 
-        // If no match was found, write the original line
+        /* If no match was found, write the original line */
         if (!lineModified) {
             fputs(line, destinationFile);
         }
@@ -124,8 +124,9 @@ void freeList(struct Macro* head) {
 
 void removeTrailingNewline(struct Macro* head) {
     struct Macro* current = head;
+    size_t contentLength;
     while (current != NULL) {
-        size_t contentLength = strlen(current->content);
+        contentLength = strlen(current->content);
         if (contentLength > 0 && current->content[contentLength - 1] == '\n') {
             current->content[contentLength - 1] = '\0';
         }
@@ -137,11 +138,11 @@ int isMacroNameExists(struct Macro* head, const char* name) {
     struct Macro* current = head;
     while (current != NULL) {
         if (strcmp(current->name, name) == 0) {
-            return 1; // Macro name already exists
+            return 1; /* Macro name already exists */
         }
         current = current->next;
     }
-    return 0; // Macro name does not exist in the linked list
+    return 0; /* Macro name does not exist in the linked list */
 }
 
 int insertTheMacro(char* errorFileName,struct Macro** head, const char* file) {
@@ -150,106 +151,109 @@ int insertTheMacro(char* errorFileName,struct Macro** head, const char* file) {
     const char* endWord = "endmcro";
     int foundMcro = 0;
     FILE* inputFile = fopen(file, "r");
-
+    struct Macro* newMacro = NULL;
+    int isReadingContent = 0;
+    char* newContent;
+    char *mcroName;
+    struct Macro* current;
+    size_t currentContentLength;
+    size_t newLineLength;
+    size_t lineLength;
     if (inputFile == NULL) {
         printf("Failed to open file\n");
         return 1;
     }
 
-    // Variables to store the current macro being processed and content reading flag
-    struct Macro* newMacro = NULL;
-    int isReadingContent = 0;
+    /* Variables to store the current macro being processed and content reading flag */
 
-    // Read each line of the file
+    /* Read each line of the file */
     while (fgets(line, sizeof(line), inputFile)) {
         if (strcmp(line, "\n") == 0 && foundMcro && isReadingContent) {
-            // Add new line to the content of the current macro
-            size_t currentContentLength = strlen(newMacro->content);
-            size_t newLineLength = 1;
+            /* Add new line to the content of the current macro */
+            currentContentLength = strlen(newMacro->content);
+            newLineLength = 1;
 
-            // Reallocate memory to accommodate the new line character
-            char* newContent = realloc(newMacro->content, currentContentLength + newLineLength + 1);
+            /* Reallocate memory to accommodate the new line character */
+            newContent = realloc(newMacro->content, currentContentLength + newLineLength + 1);
             if (newContent == NULL) {
-                // Memory reallocation failed, handle error
+                /* Memory reallocation failed, handle error */
                 fclose(inputFile);
                 freeList(*head);
                 return 1;
             }
 
-            // Append new line character and update the content pointer
+            /* Append new line character and update the content pointer */
             newContent[currentContentLength] = '\n';
             newContent[currentContentLength + newLineLength] = '\0';
             newMacro->content = newContent;
         } else {
-            // Check if the line starts with the target word
+            /* Check if the line starts with the target word */
             if (strncmp(line, word, strlen(word)) == 0) {
                 foundMcro = 1;
 
-                char* mcroName = strtok(line + strlen(word), " \t\n\r");
+                mcroName = strtok(line + strlen(word), " \t\n\r");
                 if (isMacroNameExists(*head, mcroName)) {
                     printf_line_error(errorFileName,line,"Macro with name '%s' already exists.\n");
                     foundMcro = 0;
                     newMacro = NULL;
-                    continue; // Skip processing this macro
+                    continue; /* Skip processing this macro */
                 }
 
-                // Create a new Macro struct and store the name
+                /* Create a new Macro struct and store the name */
                 newMacro = createNode(mcroName, "");
 
-                // Set the content reading flag
+                /* Set the content reading flag */
                 isReadingContent = 1;
             } else if (foundMcro && isReadingContent) {
-                // Check if the line contains the end word
+                /* Check if the line contains the end word */
                 if (strstr(line, endWord) != NULL) {
-                    // Stop reading the content
+                    /* Stop reading the content */
                     isReadingContent = 0;
 
-                    // Append the newMacro struct to the linked list
+                    /* Append the newMacro struct to the linked list */
                     if (*head == NULL) {
                         *head = newMacro;
                     } else {
-                        struct Macro* current = *head;
+                        current = *head;
                         while (current->next != NULL) {
                             current = current->next;
                         }
                         current->next = newMacro;
                     }
 
-                    // Reset the variables
+                    /* Reset the variables */
                     foundMcro = 0;
                     newMacro = NULL;
                 } else {
-                    // Remove leading spaces and tabs
+                    /* Remove leading spaces and tabs */
                     char* contentLine = line;
                     while (*contentLine == ' ' || *contentLine == '\t') {
                         contentLine++;
                     }
 
-                    // Append the line to the content of the current macro
-                    size_t currentContentLength = strlen(newMacro->content);
-                    size_t lineLength = strlen(contentLine);
+                    /* Append the line to the content of the current macro */
+                    currentContentLength = strlen(newMacro->content);
+                    lineLength = strlen(contentLine);
 
-                    // Reallocate memory to accommodate the line
-                    char* newContent = realloc(newMacro->content, currentContentLength + lineLength + 1);
+                    /* Reallocate memory to accommodate the line */
+                    newContent = realloc(newMacro->content, currentContentLength + lineLength + 1);
                     if (newContent == NULL) {
-                        // Memory reallocation failed, handle error
-                        // You can choose to terminate the program or handle the error gracefully
+                        /* Memory reallocation failed, handle error */
+                        /* You can choose to terminate the program or handle the error gracefully */
                         fclose(inputFile);
                         freeList(*head);
                         return 1;
                     }
 
-                    // Append the line and update the content pointer
+                    /* Append the line and update the content pointer */
                     strcat(newContent, contentLine);
                     newMacro->content = newContent;
                 }
             }
         }
     }
-
     fclose(inputFile);
-
-    // Remove the trailing newline from the content of each macro
+    /* Remove the trailing newline from the content of each macro */
     removeTrailingNewline(*head);
 
     return 0;
