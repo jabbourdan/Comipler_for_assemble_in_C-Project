@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "makeAm.h"
-#include "globals.h"
+#include "main.h"
 typedef struct {
     char name[MAX_LINE_LENGTH];
 } funNotAllowed;

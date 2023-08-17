@@ -3,7 +3,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
-#include "globals.h"
+#include "main.h"
 #include <stdlib.h>
 #define MAX_SYMBOL_LENGTH 31
 int validSymbol(char line[], int indexOfTheDots);

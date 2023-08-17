@@ -2,7 +2,7 @@
 #define PRINTTHEOUTPUTS_H
 #include <stdio.h>
 #include <string.h>
-#include "globals.h"
+#include "main.h"
 #include "machineCode.h"
 #include "dataTable.h"
 int returnIfThereIsNoErrors(char *filename);

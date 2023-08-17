@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "globals.h"
+#include "main.h"
 #include "mcroValid.h"
 #include "dataTable.h"
 #include "machineCode.h"

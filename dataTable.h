@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "globals.h"
+#include "main.h"
 #include "machineCode.h"
 struct dataTable  {
     char symbol [MAX_SYMBOL_LENGTH];

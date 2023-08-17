@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "globals.h"
+#include "main.h"
 #include "validSyntax.h"
 
 struct Macro {
