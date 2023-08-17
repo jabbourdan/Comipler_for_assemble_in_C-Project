@@ -8,5 +8,5 @@
 #include "firstStep.h"
 #include "globals.h"
 
-void secondCheck(char* fileName,struct  dataTable* stail, struct  machineCode* dtail,int *IC,int *DC);
+void secondCheck(char* fileName,char* errorFileName,struct  dataTable* stail, struct  machineCode* dtail,int *IC,int *DC);
 #endif /* MAKE_AM_H */

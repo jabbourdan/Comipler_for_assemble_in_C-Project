@@ -15,7 +15,7 @@ int is_newline_or_spaces(const char *line) {
 
     return is_empty || begins_with_newline;
 }
-int isSymbol(char line[], struct dataTable *temp, struct dataTable *dataTable,int step) {
+int isSymbol(char line[],char *errorFileName, struct dataTable *temp, struct dataTable *dataTable,int step) {
     int index = 0, sindex = 0;
     char sname[MAX_LINE_LENGTH];
     memset(sname, '\0', MAX_LINE_LENGTH);
@@ -23,7 +23,7 @@ int isSymbol(char line[], struct dataTable *temp, struct dataTable *dataTable,in
         return 0;
     while (isspace(line[index]))
         index++;
-    while (line[index] != '\n' && line[index] != ':') {
+    while (line[index] != '\n' && line[index] != ':' && line[index] !='\0') {
 
         if (line[index] ==':')
             break;
@@ -34,16 +34,16 @@ int isSymbol(char line[], struct dataTable *temp, struct dataTable *dataTable,in
 
     if (line[index] == ':') {
         if(validSymbol(line, index)!=1){
-            printf("This line %s\nHas Wrong format",line);
+            printf_line_error(errorFileName,line,"This line Has Wrong format\n");
         }
         if (validSymbol(line, index)==1) {
-            if (notExistSymbol(dataTable, sname) && step==1) {
+            if (notExistSymbol(line,errorFileName,dataTable, sname) && step==1) {
                 strcpy(temp->symbol, sname);
                 return 1;
             } else if(step==2){
                 return 1;
             }else {
-                printf("\nerror: The symbol %s already exist in the file\n", sname);
+                printf_line_error(errorFileName,line,"The symbol already exist in the file\n");
             }
         }
     }
@@ -102,7 +102,7 @@ int stringOrData(char line[],int index) /*Checks whether this is a data prompt o
 
 }
 
-int opCode(char line[], int index, struct machineCode *machineCode) /* Return the index of the opcode, and update the funct in the decode table */
+int opCode(char line[],char *errorFileName, int index, struct machineCode *machineCode) /* Return the index of the opcode, and update the funct in the decode table */
 {
     int oindex = 0;
     char opName[MAX_LINE_LENGTH];
@@ -115,16 +115,14 @@ int opCode(char line[], int index, struct machineCode *machineCode) /* Return th
         index++;
     }
     if(!validTakesArgs(opName,line,index)){
-        printf("The line %s \nTakes wrong Number of args \n ",line);
+        printf_line_error(errorFileName,line,"This line akes wrong Number of args\n");
         return -1;
     }
-    machineCodeFunction(machineCode, opName, line);
-    argFuntion(line,index,machineCode, opName);
+    machineCodeFunction(errorFileName,machineCode, opName, line);
     return index;
 }
 
 int entryOrExtery(char line[],int index){
-
     int aindex = 0 ;
     char att[MAX_LINE_LENGTH];
     if(line[index] == '\n')
@@ -145,7 +143,7 @@ int entryOrExtery(char line[],int index){
     return 0;
 }
 int numOfArg(struct  machineCode* machineCode,char line[]){
-    if(!strcmp(machineCode->functAdress,"0000") || !strcmp(machineCode->functAdress,"0001") || !strcmp(machineCode->functAdress,"0110") || !strcmp(machineCode->functAdress,"0010") ||!strcmp(machineCode->funct,"0011"))
+    if(!strcmp(machineCode->functAdress,"0000") || !strcmp(machineCode->functAdress,"0001") || !strcmp(machineCode->functAdress,"0110") || !strcmp(machineCode->functAdress,"0010") ||!strcmp(machineCode->functAdress,"0011"))
         if(checkBothRegOrNot(line)==2 && strcmp(machineCode->functAdress,"0110")){ //not lea
             return 2;
         }else
@@ -159,7 +157,7 @@ int numOfArg(struct  machineCode* machineCode,char line[]){
         return 0;
 }
 
-int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *machineHead, int *IC, int *DC) {
+int firstcheck(char *fileName, char* errorFileName,struct dataTable *dataHead, struct machineCode *machineHead, int *IC, int *DC) {
     int tempDC = 0, tempIC = 100, ind = 0, flagData = 1,flagMachine =1, value,dataTB=0,machineTB=0;
     char line[MAX_LINE_LENGTH];
     FILE *file = open_file(fileName, "r");
@@ -183,7 +181,7 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
         temp = (struct dataTable *) malloc(sizeof(struct dataTable));
         machineTemp->next = NULL;
         temp->next = NULL;
-        if (isSymbol(line, temp, tail,1)) {
+        if (isSymbol(line,errorFileName,temp, tail,1)) {
             strcpy(machineTemp->symbol, temp->symbol);
             while (isspace(line[ind]))
                 ind++;
@@ -191,18 +189,17 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
                 ind++;
             if (stringOrData(line, ind)) {
                 if (strstr(line, ".data") != NULL) {
-                    if (validateDataSyntax(line, ind)) {
+                    if (validateDataSyntax(line, errorFileName,ind)) {
                         value = stringOrData(line, ind);
                         temp->numberOfValues=value;
                         temp->adress=tempIC;
-                        insserTheNumbers(machineTemp,line);
+                        insserTheNumbers(errorFileName,machineTemp,line);
                         tempIC = tempIC + value;
                         tempDC = tempDC + value;
                         dataTB=1;
                         machineTB=1;
-
                     }
-                }else if (validString(line, ind)) {
+                }else if (validString(line, errorFileName,ind)) {
                     value = stringOrData(line, ind);
                     temp->numberOfValues=value;
                     temp->adress=tempIC;
@@ -213,20 +210,20 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
                     machineTB=1;
                 }
             }else if(entryOrExtery(line,ind) == 2){ //entry
-                if(validEntryAndExtern(line,ind)){
-                    putTheEntryOrExternIn(dataHead,line,flagData,"entry",ind);
+                if(validEntryAndExtern(line,errorFileName,ind)){
+                    putTheEntryOrExternIn(errorFileName,dataHead,line,flagData,"entry",ind);
                     flagData=0;
                     dataTB=0;
                 }
             }else if(entryOrExtery(line,ind) == 1){//extern
-                if(validEntryAndExtern(line,ind)) {
-                    putTheEntryOrExternIn(dataHead, line, flagData, "extern", 0);
+                if(validEntryAndExtern(line,errorFileName,ind)) {
+                    putTheEntryOrExternIn(errorFileName,dataHead, line, flagData, "extern", 0);
                     flagData = 0;
                     dataTB = 0;
                 }
             }
             else {
-                ind = opCode(line, ind, machineTemp);
+                ind = opCode(line,errorFileName, ind, machineTemp);
                 if(ind==-1){
                     continue;
                 }
@@ -239,14 +236,14 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
         }
         else if (stringOrData(line, ind)) {
             if (strstr(line, ".data") != NULL) {
-                if (validateDataSyntax(line, ind)) {
+                if (validateDataSyntax(line,errorFileName, ind)) {
                     value = stringOrData(line, ind);
-                    insserTheNumbers(machineTemp,line);
+                    insserTheNumbers(errorFileName,machineTemp,line);
                     tempIC = tempIC + value;
                     tempDC = tempDC + value;
                     machineTB=1;
                 }
-            }else if (validString(line, ind)) {
+            }else if (validString(line, errorFileName,ind)) {
                 value = stringOrData(line, ind);
                 insertTheString(machineTemp,line);
                 tempIC = tempIC + value;
@@ -254,14 +251,14 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
                 machineTB=1;
             }
         }else if(entryOrExtery(line,0) == 2){ //entry
-            if(validEntryAndExtern(line,ind)){
-                putTheEntryOrExternIn(dataHead,line,flagData,"entry",0);
+            if(validEntryAndExtern(line,errorFileName,ind)){
+                putTheEntryOrExternIn(errorFileName,dataHead,line,flagData,"entry",0);
                 flagData=0;
                 dataTB=0;
             }
         }else if(entryOrExtery(line,0) == 1){//extern
-            if(validEntryAndExtern(line,ind)) {
-                putTheEntryOrExternIn(dataHead, line, flagData, "extern", 0);
+            if(validEntryAndExtern(line,errorFileName,ind)) {
+                putTheEntryOrExternIn(errorFileName,dataHead, line, flagData, "extern", 0);
                 flagData = 0;
                 dataTB = 0;
             }
@@ -269,7 +266,7 @@ int firstcheck(char *fileName, struct dataTable *dataHead, struct machineCode *m
             while(isspace(line[ind])){
                 ind++;
             }
-            ind = opCode(line, ind, machineTemp);
+            ind = opCode(line, errorFileName,ind, machineTemp);
             if(ind==-1){
                 continue;
             }

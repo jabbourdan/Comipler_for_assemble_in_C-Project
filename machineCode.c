@@ -43,14 +43,15 @@ const char* funcBits(char op[]) /*Returns the opcode type in decimal base*/
         strcpy(new, "-1");
     return new;
 }
-void machineCodeFunction(struct machineCode *head, char function[], char line[]) {
+void machineCodeFunction(char* errorFileName,struct machineCode *head, char function[], char line[]) {
     const char *binaryFunction = funcBits(function);
     if(binaryFunction==NULL){
-        printf("Error: Memory allocation failed in funcBits \n");
+
+        printf_line_error(errorFileName,line,"Error: Memory allocation failed in funcBits \n");
         return;
     }
     if(strcmp(binaryFunction, "-1") == 0){
-        printf("Error: the syntax of this line %s Is not correct \n",line);
+        printf_line_error(errorFileName,line,"The syntax of this line is not correct \n");
         return;
     }
     if(binaryFunction !=NULL || binaryFunction != 0){
@@ -60,7 +61,6 @@ void machineCodeFunction(struct machineCode *head, char function[], char line[])
     }
     strcpy(head->funct, function);
     strcpy(head->functAdress, binaryFunction);
-    free(binaryFunction);
 }
 char* changeBinary(int number, int bits) {
     // Calculate the minimum buffer size needed for the binary representation
@@ -104,11 +104,11 @@ int isNumeric(const char* str) {
     }
     return 1;
 }
-void insertNode(struct machineCode* head, const char* symbol, int num) {
+void insertNode(char* errorFileName,struct machineCode* head, const char* symbol, int num) {
 
     struct machineCode* newNode = (struct machineCode*)malloc(sizeof(struct machineCode));
     if (newNode == NULL) {
-        printf("Error: Memory allocation failed\n");
+        printf_line_error(errorFileName,NULL,"Error: Memory allocation failed in funcBits \n");
         return;
     }
 
@@ -134,30 +134,25 @@ void insertNode(struct machineCode* head, const char* symbol, int num) {
 
 }
 
-void insserTheNumbers(struct machineCode* head,char line[]){
+void insserTheNumbers(char *errorFileName,struct machineCode* head,char line[]){
     int num,firstTime=0;
     char *binary;
     char* symbol = head->symbol;
-    //printf("The line is : %s",line);
     char* token = strtok(line, " ,"); // Split the line by spaces and commas
     while (token != NULL) {
         if(isNumeric(token)) {
             if(!firstTime){
                 num = atoi(token); // Convert the token to an integer
-                //printf("Binary representation of %d: ", num);
                 binary = changeBinary(num,12);
                 strcpy(head->opcode,binary);
                 strcpy(head->stringordata,".data");
                 firstTime=1;
             } else {
                 num = atoi(token); // Convert the token to an integer
-                //printf("Binary representation of %d: ", num);
                 binary = changeBinary(num,12);
-                insertNode(head, symbol, num);
+                insertNode(errorFileName,head, symbol, num);
                 strcpy(head->stringordata,".data");
 
-                //printf("%s",binary);
-                //printf("\n");
             }
         }
         token = strtok(NULL, " ,"); // Move to the next token
@@ -182,7 +177,7 @@ char* convertBinaryString(char ch) {
     char *binaryStr = (char*)malloc(13);// Fixed-size array to store the binary representation (12 bits + 1 null-terminator)
     int i;
     if (binaryStr == NULL) {
-        printf("Error: Memory allocation failed\n");
+        printf("Error: Memory allocation failed in funcBits \n");
         return NULL;
     }
     // Build the binary representation in the character array
@@ -195,7 +190,7 @@ void insertnodeString(struct machineCode* head ,const char* symbol,char ch){
     struct machineCode* newNode = (struct machineCode*)malloc(sizeof(struct machineCode));
     char* binary=NULL;
     if (newNode == NULL) {
-        printf("Error: Memory allocation failed\n");
+        printf("Error: Memory allocation failed in funcBits \n");
         return;
     }
     if(ch == '\0'){
@@ -266,7 +261,6 @@ int checkBothRegOrNot(const char line[]){
 
 void argFuntion(const char line[],int index, struct machineCode* head,char functionName[]){
 
-    //printf("----%s----\n",functionName);
     if(strcmp(functionName, "lea") == 0){
         strcpy(head->firstArgAddress,"000000000000");
         strcpy(head->secondArgAddress,"000000000000");
@@ -313,15 +307,22 @@ char* shiftBinary(char* binary, int positions, int direction) {//0 left 1 for ri
 
     return shiftedBinary;
 }
-char* convertTheArgToBinary(struct dataTable* headTable,char* arg,int type,const char* secondArg,int tempIC){
+char* convertTheArgToBinary(char line[],char *errorFileName,struct dataTable* headTable,char* arg,int type,const char* secondArg,int tempIC){
     struct dataTable* temp=headTable;
     int lastValue;
+    long number;
     long int value;
     unsigned long length = strlen(arg);
     unsigned long lengthLastArg;
     char lastArg;
+    char *endptr;
     char* binnary=NULL;
     if(type==1){
+        number = strtol(arg, &endptr, 10);
+        if(number <= -2048 || number >= 2047){
+            printf_line_error(errorFileName,line,"The number ont this line is bigger that 2047 or lower that -2048");
+            return 0;
+        }
         value=strtol(arg, NULL, 10);
         binnary = changeBinary((int)value,12);
     }else if(type==3){
@@ -363,38 +364,38 @@ void updateTheOpCode(struct machineCode* head,char* funName,int typeFirsArg ,int
         concatenated = shiftBinary(concatenated,2,0);
         //free(concatenated);
     } else {
-        printf("Memory allocation failed\n");
+        printf("Memmory alocated error");
     }
-
-
+    strcpy(head->opcode,concatenated);
 }
-void updateMachineAtPosition(struct machineCode* head,struct dataTable* headData,char* firstArg,char* secondArg,char* funcName,int tempIC){
+void updateMachineAtPosition(char line[],char *errorFileName,struct machineCode* head,struct dataTable* headData,char* firstArg,char* secondArg,char* funcName,int tempIC){
     struct machineCode* current = head;
     int typeFirsArg,typeSecondArg,count=1;
     char* binaryFirstArg;
     char* binarySecondArg;
-    typeFirsArg=retrunTheNumberOfThetypeOfThearg(firstArg);
-    typeSecondArg=retrunTheNumberOfThetypeOfThearg(secondArg);
+    typeFirsArg=retrunTheNumberOfThetypeOfThearg(line,errorFileName,firstArg);
+    typeSecondArg=retrunTheNumberOfThetypeOfThearg(line,errorFileName,secondArg);
     if (head == NULL) {
-        printf("List is empty.\n");
         return;
     }
     while (current != NULL) {
         if (!strcmp(current->funct,funcName) && count==tempIC) {
             updateTheOpCode(current,funcName,typeFirsArg,typeSecondArg);
             if(typeFirsArg==5 && typeSecondArg==5){
-
+                strcpy(current->firstArg , firstArg);
+                strcpy(current->secondArg , secondArg);
+                strcpy(current->firstArgAddress,"000010010000");
             }else
             if(firstArg!=NULL){
                 strcpy(current->firstArg , firstArg);
-                binaryFirstArg = convertTheArgToBinary(headData,firstArg,typeFirsArg,secondArg,tempIC);
+                binaryFirstArg = convertTheArgToBinary(line,errorFileName,headData,firstArg,typeFirsArg,secondArg,tempIC);
                 if(binaryFirstArg!=NULL){
                     strcpy(current->firstArgAddress , binaryFirstArg);
                 }
 
                 if(secondArg!=NULL){
                     strcpy(current->secondArg , secondArg);
-                    binarySecondArg = convertTheArgToBinary(headData,secondArg,typeSecondArg,NULL,tempIC);
+                    binarySecondArg = convertTheArgToBinary(line,errorFileName,headData,secondArg,typeSecondArg,NULL,tempIC);
                     if(binarySecondArg!=NULL){
                         strcpy(current->secondArgAddress , binarySecondArg);
                     }
@@ -408,7 +409,7 @@ void updateMachineAtPosition(struct machineCode* head,struct dataTable* headData
     }
 
 }
-void updateTheMachineOfTheFunction(struct dataTable* headTable, struct machineCode* head, char line[], int isSymbol,int tempIC ) {
+void updateTheMachineOfTheFunction(char* errorFileName,struct dataTable* headTable, struct machineCode* head, char line[], int isSymbol,int tempIC ) {
     char* funcNameSymbol = (char*)malloc(MAX_SYMBOL_LENGTH);;
     char* funcName = (char*)malloc(MAX_LINE_LENGTH);
     int syIndex = 0, index = 0,symbol=0;
@@ -455,11 +456,11 @@ void updateTheMachineOfTheFunction(struct dataTable* headTable, struct machineCo
     firstArg = returnSource(line, index);
     secondArg = returnDest(line, index);
     if(funcNameSymbol!=NULL){
-        if (validArgsFun(funcNameSymbol, firstArg, secondArg)) {
-            updateMachineAtPosition(head, headTable, firstArg, secondArg, funcName,tempIC);
+        if (validArgsFun(line,errorFileName,funcNameSymbol, firstArg, secondArg)) {
+            updateMachineAtPosition(line,errorFileName,head, headTable, firstArg, secondArg, funcName,tempIC);
         }
-    }else if(validArgsFun(funcName, firstArg, secondArg)){
-        updateMachineAtPosition(head, headTable, firstArg, secondArg,funcName,tempIC);
+    }else if(validArgsFun(line,errorFileName,funcName, firstArg, secondArg)){
+        updateMachineAtPosition(line,errorFileName,head, headTable, firstArg, secondArg,funcName,tempIC);
     }
 
     // Free dynamically allocated memory

@@ -64,7 +64,7 @@ void reWriteAmFile(struct Macro** head, const char* file, const char* fileAm) {
                 // Replace the word in the line with the macro content
                 char* replacedLine = malloc(strlen(line) + strlen(temp->content));
                 if (replacedLine == NULL) {
-                    fprintf(stderr, "Memory allocation failed.\n");
+                    printf("Memory allocation failed.\n");
                     fclose(sourceFile);
                     fclose(destinationFile);
                     return;
@@ -100,9 +100,6 @@ void reWriteAmFile(struct Macro** head, const char* file, const char* fileAm) {
 
     fclose(sourceFile);
     fclose(destinationFile);
-
-    printf("File copied successfully.\n");
-
 }
 
 
@@ -147,7 +144,7 @@ int isMacroNameExists(struct Macro* head, const char* name) {
     return 0; // Macro name does not exist in the linked list
 }
 
-int insertTheMacro(struct Macro** head, const char* file) {
+int insertTheMacro(char* errorFileName,struct Macro** head, const char* file) {
     char line[100];
     const char* word = "mcro";
     const char* endWord = "endmcro";
@@ -190,7 +187,7 @@ int insertTheMacro(struct Macro** head, const char* file) {
 
                 char* mcroName = strtok(line + strlen(word), " \t\n\r");
                 if (isMacroNameExists(*head, mcroName)) {
-                    printf("Macro with name '%s' already exists. Skipping...\n", mcroName);
+                    printf_line_error(errorFileName,line,"Macro with name '%s' already exists.\n");
                     foundMcro = 0;
                     newMacro = NULL;
                     continue; // Skip processing this macro

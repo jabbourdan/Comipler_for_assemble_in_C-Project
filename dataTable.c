@@ -1,5 +1,5 @@
 #include "dataTable.h"
-int notExistSymbol(struct dataTable *dataTable, char sname[]) /*Checks if the symbol already exists*/
+int notExistSymbol(char line[],char* errorFileName,struct dataTable *dataTable, char sname[]) /*Checks if the symbol already exists*/
 {
     struct dataTable *tailf = NULL;
     tailf = (struct dataTable *) malloc(sizeof(struct dataTable));
@@ -12,7 +12,7 @@ int notExistSymbol(struct dataTable *dataTable, char sname[]) /*Checks if the sy
                 continue;
             }if(strcmp(tailf->type, "extern") ==0) {
                 tailf = tailf->next;
-                printf("This Symbol %s is extern and is exist on the file as symbol",sname);
+                printf_line_error(errorFileName,line,"This Symbol is extern and is exist on the file as symbol");
                 continue;
             }
             return 0;
@@ -23,7 +23,7 @@ int notExistSymbol(struct dataTable *dataTable, char sname[]) /*Checks if the sy
 
     return 1;
 }
-int checkTheEntry(struct dataTable *head, char line[],int index){
+int checkTheEntry(char* errorFileName,struct dataTable *head, char line[],int index){
     struct dataTable *current ;
     char* symbols = (char *) malloc(MAX_SYMBOL_LENGTH);
     int  syIndex = 0,apear=0;
@@ -60,7 +60,7 @@ int checkTheEntry(struct dataTable *head, char line[],int index){
             current = current->next;
         }
         if(apear==0){
-            printf("The entry symbole %s don't exist as a symbol in the file\n",symbols);
+            printf_line_error(errorFileName,line,"The entry symbole don't exist as a symbol in the file\n");
         }
 
     }
@@ -69,7 +69,7 @@ int checkTheEntry(struct dataTable *head, char line[],int index){
     return apear;
 }
 
-void checkTheExtern(struct dataTable *head, char line[],int index) {
+void checkTheExtern(char *errorFileName,struct dataTable *head, char line[],int index) {
     struct dataTable *current ;
     char* symbols = (char *) malloc(MAX_SYMBOL_LENGTH);
     int  syIndex = 0;
@@ -97,7 +97,7 @@ void checkTheExtern(struct dataTable *head, char line[],int index) {
         while (current != NULL) {
             if (strcmp(current->symbol, symbols) == 0) {
                 if (strcmp(current->type, "extern")) {
-                    printf("This Symbol %s is extern and is exist on the file as symbol.\n", symbols);
+                    printf_line_error(errorFileName,line,"This Symbol is extern and is exist on the file as symbol.\n");
                 }
                 // Stop the loop once the symbol is found
             }
@@ -134,7 +134,7 @@ char* extractTheAdressOfSymbol(struct dataTable* head,char* symbol,int tempIC){
     }
     return finalAddress;
 }
-void putTheEntryOrExternIn(struct dataTable* dataHead, char line[],int flag,const char * type,int index) {
+void putTheEntryOrExternIn(char *errorFileName,struct dataTable* dataHead, char line[],int flag,const char * type,int index) {
     int tokenLength;
     char *substring;
     char att[MAX_LINE_LENGTH];
@@ -156,8 +156,8 @@ void putTheEntryOrExternIn(struct dataTable* dataHead, char line[],int flag,cons
 
     char *token = strtok(substring, " ,");
     while (token != NULL){
-        if(!notExistSymbol(dataHead,token)){
-            printf("This symbol %s exist in the dataTable\n",token);
+        if(!notExistSymbol(line,errorFileName,dataHead,token)){
+            printf_line_error(errorFileName,line,"This symbol exist in the dataTable\n");
             token = strtok(NULL, " ,");
             continue;
         }

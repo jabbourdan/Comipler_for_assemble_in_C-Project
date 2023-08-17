@@ -1,23 +1,32 @@
 #include "validSyntax.h"
 
+void printf_line_error(char* errorFileName,char* line, char* message){
+    FILE *err_output_file = fopen(errorFileName, "a");
+
+    fprintf(err_output_file,"Error In %s", line);
+    fprintf(err_output_file,"The error is : %s",message);
+    fprintf(err_output_file, "\n");
+    fflush(err_output_file);
+
+    fclose(err_output_file);
+
+}
+
 int validSymbol(char line[],int indexOfTheDots) {
     int j=0;
 
     if(indexOfTheDots == 0 ){
-        //printf("\nERROR : The line is : %s \n contain ':' without name\n",line);
         return -1;
     }
     while(isspace(line[j]))
         j++;
     if(isdigit(line[j])){
-        //printf("The symbol begins with digit, this is the line %s\n",line);
         return 0;}
     if(indexOfTheDots-j>=MAX_SYMBOL_LENGTH-1){
-        //printf("The symbole name : '%s' is larger that 31 its not allowed\n",sname);
         return -1;
     }
     if(!isspace(line[indexOfTheDots+1]) || isspace((line[indexOfTheDots-1]))){
-        //("\nERROR : The line is %s \n contain ':' wrong spaces \n",line);
+
         return -1;
     }
     return 1;
@@ -36,22 +45,27 @@ int returnIndexTheData(char line[],int index){
     }
     return index;
 }
-int validateDataSyntax(char line[],int index) {
+int validateDataSyntax(char line[],char *errorFileName,int index) {
     int index1 = returnIndexTheData(line,index);
     int num_flag = 0,comma=0;
     int last_non_space_idx = 0,num=0;
     int i = 0;
     int index2=returnIndexTheData(line,index);
+    char mainLine[MAX_LINE_LENGTH];
+    strcpy(mainLine,line);
     char *line1=line;
     char *line2=line;
+    const char delimiters[] = " ,";
+    char *token;
     int last_comma = -2;
+    char *endptr;
     while (line[index1] != '\0') {
         if (isspace(line[index1])) {
             index1++;
             continue;
         }
         if (num_flag &&  isdigit(line[index1])){
-            printf("This line %s\nHas Wrong format",line);
+            printf_line_error(errorFileName,mainLine,"This line has wrong format\n");
             return 0;}
         while (isdigit(line[index1])) {
             num_flag = 1;
@@ -71,7 +85,7 @@ int validateDataSyntax(char line[],int index) {
         } else {
             if (line[index2] == ',') {
                 if (last_comma > last_non_space_idx) {
-                    printf("This line %s\nHas Wrong format\n",line);
+                    printf_line_error(errorFileName,mainLine,"This line has wrong format\n");
                     return 0;
                 }
                 last_comma = i;
@@ -85,7 +99,7 @@ int validateDataSyntax(char line[],int index) {
     while(line2[i]!='\0'){
         if(isspace(line2[i]))i++;
         if(line2[i] == ','&& !num){
-            printf("This line %s\nHas Wrong format with first comma\n",line);
+            printf_line_error(errorFileName,mainLine,"This line has wrong format with the comma\n");
             return 0;
         }
         if(!isspace(line[i])&&line[i] != ','){
@@ -94,13 +108,25 @@ int validateDataSyntax(char line[],int index) {
         i++;
     }
     if(comma){
-        printf("This line %s\nHas Wrong format\n",line);
+        printf_line_error(errorFileName,mainLine,"This line has wrong format\n");
         return 0;
+    }
+    token = strtok(line + index, delimiters);
+    while (token != NULL) {
+        // If the token starts with a digit or a minus sign followed by a digit
+
+        long long number = strtoll(token, &endptr, 10);
+        if (number <= -2048 || number >= 2047) {
+            printf_line_error(errorFileName,mainLine,"error: this line has wrong number\n");
+            return 0;
+        }
+        // Find the next token
+        token = strtok(NULL, delimiters);
     }
     return 1;
 }
 
-int validString(char line[],int index){
+int validString(char line[],char *errorFileName,int index){
     int quat=0;
     index = returnIndexTheData(line,index);
     while(isspace(line[index])){
@@ -118,7 +144,7 @@ int validString(char line[],int index){
         index++;
     }
     if(quat==1){
-        printf("This line %s \"Has wrong syntax ",line);
+        printf_line_error(errorFileName,line,"This line has wrong syntax\n");
         return 0;
     }
     return 1;
@@ -149,7 +175,7 @@ char* returnSource(char line[],int index) {
 
 char* returnDest(char line[],int index) {
     char *desArg = (char *) malloc(MAX_LINE_LENGTH * sizeof(char));
-    int desIndex = 0;
+    int desIndex = 0,comma=0;
     if(line[index] == '\n'){
         return NULL;
     }
@@ -157,14 +183,21 @@ char* returnDest(char line[],int index) {
     while(!isspace(line[index])){
         if(line[index] == ','){
             index++;
+            comma =1;
             break;
         }
         index++;
     }
+
     while (isspace(line[index]) || line[index] ==',') {
+        if(line[index] ==','){
+            comma=1;
+        }
         index++;
     }
-    while (line[index] != '\0'&&!isspace(line[index])) {
+    if(!comma)return NULL;
+
+    while (line[index] != '\0'&&!isspace(line[index]) && line[index] !='\n') {
         desArg[desIndex] = line[index];
         desIndex++;
         index++;
@@ -198,7 +231,7 @@ int validTakesArgs(char functionName[],char line[],int index){
     free(secondArg);
     return 1;
 }
-int retrunTheNumberOfThetypeOfThearg(char* arg){
+int retrunTheNumberOfThetypeOfThearg(char line[],char *errorFileName,char* arg){
     int index = 0;
     if(arg==NULL)return 0;
     while(isspace(arg[index]) || arg[index] == ',')index++;
@@ -208,7 +241,7 @@ int retrunTheNumberOfThetypeOfThearg(char* arg){
         if(arg[index] == '-')index++;
         while(arg[index] != '\0'){
             if(!isdigit(arg[index])){
-                printf("The symbol is %s Take wrong type arg\n",arg);
+                printf_line_error(errorFileName,line,"The symbol is take wrong type arg\n");
                 return 0;
             }
             index++;
@@ -220,23 +253,23 @@ int retrunTheNumberOfThetypeOfThearg(char* arg){
         return 0;
 }
 
-int validArgsFun(char funcNameSymbol[],char* firstArg,char* secondArg){
-    int firstTpye=retrunTheNumberOfThetypeOfThearg(firstArg);
-    int secondTpye=retrunTheNumberOfThetypeOfThearg(secondArg);
+int validArgsFun(char line[],char *errorFileName,char funcNameSymbol[],char* firstArg,char* secondArg){
+    int firstTpye=retrunTheNumberOfThetypeOfThearg(line,errorFileName,firstArg);
+    int secondTpye=retrunTheNumberOfThetypeOfThearg(line,errorFileName,secondArg);
     if(!strcmp(funcNameSymbol, "mov") || !strcmp(funcNameSymbol, "sub") || !strcmp(funcNameSymbol, "add")){
         if(secondTpye==1){
-            printf("The symbol is %s Take wrong type arg\n",funcNameSymbol);
+            printf_line_error(errorFileName,line,"The symbol is take wrong type arg\n");
             return 0;
         }
     }else if(!strcmp(funcNameSymbol, "lea")){
         if(firstTpye==1 || firstTpye==5 || secondTpye ==1){
-            printf("The symbol is %s Take wrong type arg\n",funcNameSymbol);
+            printf_line_error(errorFileName,line,"The symbol is take wrong type arg\n");
             return 0;
         }
     }else if(!strcmp(funcNameSymbol, "not") || !strcmp(funcNameSymbol, "clr") || !strcmp(funcNameSymbol, "inc") || !strcmp(funcNameSymbol, "dec") ||
             !strcmp(funcNameSymbol, "jmp") || !strcmp(funcNameSymbol, "bne") || !strcmp(funcNameSymbol, "red") || !strcmp(funcNameSymbol, "jsr")){
         if(firstTpye==1){
-            printf("The symbol is %s Take wrong type arg\n",funcNameSymbol);
+            printf_line_error(errorFileName,line,"The symbol is take wrong type arg\n");
             return 0;
         }
     }
@@ -244,7 +277,7 @@ int validArgsFun(char funcNameSymbol[],char* firstArg,char* secondArg){
 
 }
 
-int validEntryAndExtern(char line[],int index) {
+int validEntryAndExtern(char line[],char *errorFileName,int index) {
     //valid entry no first number, betwen every 2 word should be comma
     int index1 = returnIndexTheData(line,index);
     int num_flag = 0,comma=0;
@@ -260,11 +293,11 @@ int validEntryAndExtern(char line[],int index) {
             continue;
         }
         if(isdigit(line[index1])){
-            printf("This line %s\nHas Wrong format beging with num",line);
+            printf_line_error(errorFileName,line,"The line has wrong format\n");
             return 0;
         }
         if (num_flag &&  !isspace(line[index1]) && line[index1] != ','){
-            printf("This line %s\nHas Wrong format",line);
+            printf_line_error(errorFileName,line,"The line has wrong format\n");
             return 0;}
 
         while (!isspace(line[index1]) && line[index1] != ',') {
@@ -284,7 +317,7 @@ int validEntryAndExtern(char line[],int index) {
         } else {
             if (line[index2] == ',') {
                 if (last_comma > last_non_space_idx) {
-                    printf("This line %s\nHas Wrong format with comma\n",line);
+                    printf_line_error(errorFileName,line,"The line has wrong format with comma\n");
                     return 0;
                 }
                 last_comma = i;
@@ -298,7 +331,7 @@ int validEntryAndExtern(char line[],int index) {
     while(line2[i]!='\0'){
         if(isspace(line2[i]))i++;
         if(line2[i] == ','&& !num){
-            printf("This line %s\nHas Wrong format with first comma\n",line);
+            printf_line_error(errorFileName,line,"The line has wrong format with first comma\n");
             return 0;
         }
         if(!isspace(line[i])&&line[i] != ','){
@@ -307,7 +340,7 @@ int validEntryAndExtern(char line[],int index) {
         i++;
     }
     if(comma){
-        printf("This line %s\nHas Wrong format\n",line);
+        printf_line_error(errorFileName,line,"The line has wrong format\n");
         return 0;
     }
     return 1;

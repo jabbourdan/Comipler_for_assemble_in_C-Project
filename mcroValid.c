@@ -22,7 +22,7 @@ funNotAllowed macroNames[16] = {
 FILE* open_file(const char* file, char* operator) {
     FILE* inputFile = fopen(file, operator);
     if (inputFile == NULL) {
-        printf("Unable to open the file: %s.\n", file);
+        printf("Unable to open the file\n");
     }
     return inputFile;
 }

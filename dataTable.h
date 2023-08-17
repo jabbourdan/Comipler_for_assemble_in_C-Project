@@ -14,10 +14,9 @@ struct dataTable  {
     char type[8];//if its external or what like step 9
     struct dataTable* next;
 };
-void putTheEntryOrExternIn(struct dataTable * temp,char line[],int flag,const char * type,int index);
-int notExistSymbol(struct dataTable *dataTable, char sname[]);
-int theSymboleIsEntryOrExtern(struct dataTable *dataTable, char sname[]);
+void putTheEntryOrExternIn(char *errorFileName,struct dataTable * temp,char line[],int flag,const char * type,int index);
+int notExistSymbol(char line[],char* errorFileName,struct dataTable *dataTable, char sname[]);
 char* extractTheAdressOfSymbol(struct dataTable* head,char* symbol,int tempIC);
-void checkTheExtern(struct dataTable* head,char line[],int index);
-int checkTheEntry(struct dataTable *head, char line[],int index);
+void checkTheExtern(char* errorFileName,struct dataTable* head,char line[],int index);
+int checkTheEntry(char *errorFileName,struct dataTable *head, char line[],int index);
 #endif

@@ -21,29 +21,15 @@ void printAllMachineCodes(struct machineCode* head) {
         current = current->next;
     }
 }
-void secondCheck(char* fileName,struct dataTable* dataTail, struct  machineCode* machineTail,int *IC,int *DC){
+void secondCheck(char* fileName,char* errorFileName,struct dataTable* dataTail, struct  machineCode* machineTail,int *IC,int *DC){
     printf("----------------------\n");
     printf("----second step-------\n");
     printf("----------------------\n");
     char line[MAX_LINE_LENGTH];
     int index,var,value,tempIC;
-    char fileNameAM[MAX_LINE_LENGTH];
-    char fileNameOb[MAX_LINE_LENGTH];
-    char fileNameEntry[MAX_LINE_LENGTH];
-    char fileNameExtern[MAX_LINE_LENGTH];
-    FILE  *fileOb,*fileEntry,*fileExtern,*fileAm;
-    strcpy(fileNameAM,fileName);
-    size_t fileNameLength = strlen(fileName);
-    if (fileNameLength >= 3) {
-        fileName[fileNameLength - 3] = '\0';
-    }
-    snprintf(fileNameOb, sizeof(fileNameOb), "%s.ob", fileName);
-    snprintf(fileNameEntry, sizeof(fileNameEntry), "%s.ent", fileName);
-    snprintf(fileNameExtern, sizeof(fileNameExtern), "%s.ext", fileName);
+    FILE  *fileAm;
+    fileAm = open_file(fileName,"r");
 
-    fileAm = open_file(fileNameAM,"r");
-    fileOb = fopen(fileNameOb,"w");
-    fprintf(fileOb , "   %d  %d \n",*IC-*DC-1-100 , *DC);
     while (fgets(line, MAX_LINE_LENGTH, fileAm)) /* read next line from the file */
     {
         if (is_newline_or_spaces(line)) {
@@ -55,7 +41,7 @@ void secondCheck(char* fileName,struct dataTable* dataTail, struct  machineCode*
         machineTemp = (struct machineCode *) malloc(sizeof(struct machineCode));
         temp = (struct dataTable *) malloc(sizeof(struct dataTable));
 
-        if (isSymbol(line, temp, dataTail, 2)) {
+        if (isSymbol(line,errorFileName, temp, dataTail, 2)) {
             while (isspace(line[index]))
                 index++;
             while (!isspace(line[index]))
@@ -66,22 +52,22 @@ void secondCheck(char* fileName,struct dataTable* dataTail, struct  machineCode*
                 continue;
             } else if (entryOrExtery(line, index)) {
                 if (entryOrExtery(line, index) == 1) {//extern
-                    checkTheExtern(dataTail, line, index);
+                    checkTheExtern(errorFileName,dataTail, line, index);
                 } else if (entryOrExtery(line, index) == 2) {
-                    checkTheEntry(dataTail, line, index);
+                    checkTheEntry(errorFileName,dataTail, line, index);
                 }
-            } else index = opCode(line, index, machineTemp);
+            } else index = opCode(line, errorFileName,index, machineTemp);
             if (index == -1) {
                 continue;
             }
             tempIC++;
-            updateTheMachineOfTheFunction(dataTail, machineTail, line,1,tempIC);
+            updateTheMachineOfTheFunction(errorFileName,dataTail, machineTail, line,1,tempIC);
         }
         else if (entryOrExtery(line, index)) {
             if (entryOrExtery(line, index) == 1) {//extern
-                checkTheExtern(dataTail, line, 0);
+                checkTheExtern(errorFileName,dataTail, line, 0);
             } else if (entryOrExtery(line, index) == 2) {
-                checkTheEntry(dataTail, line, 0);
+                checkTheEntry(errorFileName,dataTail, line, 0);
             }
             free(temp);
             free(machineTemp);
@@ -90,14 +76,12 @@ void secondCheck(char* fileName,struct dataTable* dataTail, struct  machineCode*
             tempIC = tempIC + value;
             continue;
         }else{
-            index = opCode(line, index, machineTemp);
+            index = opCode(line,errorFileName, index, machineTemp);
             if (index == -1) {
                 continue;
             }
             tempIC++;
-            updateTheMachineOfTheFunction(dataTail, machineTail, line, 0,tempIC);
+            updateTheMachineOfTheFunction(errorFileName,dataTail, machineTail, line, 0,tempIC);
         }
     }
-    printf("END");
-    printAllMachineCodes(machineTail);
 }

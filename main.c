@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "mcroValid.h"
 #include "firstStep.h"
+#include "printTheOutPuts.h"
 
 int check_length_lines(char *filename);
 
@@ -11,10 +12,12 @@ int main(int argc, char *argv[]) {
     const char *extension_as = ".as";
     int max_length;
     int valid ;
+    char errorFile[30];
+    const char* baseFilename = "errorFile"; // Base filename
+    const char* extension_txt = ".txt";   // File extension
     printf("Number of arguments: %d\n", argc);
-
     if (argc == 1) {
-        fprintf(stderr, "No files given.\n");
+        printf( "No files given.\n");
         return 1;
     }
     for (i = 1; i < argc; i++) {
@@ -32,7 +35,8 @@ int main(int argc, char *argv[]) {
         fileEnd = file;
         strcpy(file, argv[i]);
         strcat(file, extension_as);
-        printf("%s\n", file);
+
+        snprintf(errorFile, 20, "%s%d%s", baseFilename, i, extension_txt);
 
         max_length = check_length_lines(file);
         if (max_length <= 0) {
@@ -45,16 +49,20 @@ int main(int argc, char *argv[]) {
             if(valid){
                 fileEnd = makeAmFile(file);
                 struct Macro* head = NULL;
-                insertTheMacro(&head, file);
+                insertTheMacro(errorFile,&head, file);
                 reWriteAmFile(&head, file,fileEnd);
                 freeList(head);
 
             }
-            printf("%s ----\n ",fileEnd);
-
         }
-        firstcheck(fileEnd,dataHead,machineHead,&IC,&DC);
-        secondCheck(fileEnd,dataHead,machineHead,&IC,&DC);
+
+        firstcheck(fileEnd,errorFile,dataHead,machineHead,&IC,&DC);
+        //secondCheck(fileEnd,errorFile,dataHead,machineHead,&IC,&DC);
+
+        if(returnIfThereIsNoErrors(errorFile)){
+            printTheObFile(fileEnd,&IC,&DC);
+        }
+        //remove("error_output.txt");
         free(file);
     }
     return 0;
